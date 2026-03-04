@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ecommerce-backend</a> &gt; <a href="index.source.html" class="el_package">com.ecommerce.service</a> &gt; <span class="el_source">ProductService.java</span></div><h1>ProductService.java</h1><pre class="source lang-java linenums">package com.ecommerce.service;
+
+import com.ecommerce.dto.PageResponse;
+import com.ecommerce.dto.ProductDto;
+import com.ecommerce.entity.Category;
+import com.ecommerce.entity.Product;
+import com.ecommerce.repository.CategoryRepository;
+import com.ecommerce.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+<span class="fc" id="L20">@RequiredArgsConstructor</span>
+public class ProductService {
+
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+
+    @Transactional(readOnly = true)
+    public PageResponse&lt;ProductDto&gt; findAllAdmin(int page, int size) {
+<span class="nc" id="L28">        Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;id&quot;));</span>
+<span class="nc" id="L29">        Page&lt;Product&gt; productPage = productRepository.findAll(pageable);</span>
+<span class="nc" id="L30">        return toPageResponse(productPage);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse&lt;ProductDto&gt; findAllPublic(int page, int size, String search, Long categoryId) {
+<span class="nc" id="L35">        Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;name&quot;));</span>
+<span class="nc" id="L36">        Page&lt;Product&gt; productPage = productRepository.searchByDeletedFalseAndOptionalFilters(</span>
+<span class="nc bnc" id="L37" title="All 4 branches missed.">                search != null &amp;&amp; !search.isBlank() ? search.trim() : null,</span>
+                categoryId,
+                pageable);
+<span class="nc" id="L40">        return toPageResponse(productPage);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public ProductDto findByIdPublic(Long id) {
+<span class="fc" id="L45">        Product product = productRepository.findById(id)</span>
+<span class="fc" id="L46">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Product not found: &quot; + id));</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (product.isDeleted()) {</span>
+<span class="fc" id="L48">            throw new IllegalArgumentException(&quot;Product not found: &quot; + id);</span>
+        }
+<span class="fc" id="L50">        return toDto(product);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public ProductDto findByIdAdmin(Long id) {
+<span class="nc" id="L55">        Product product = productRepository.findById(id)</span>
+<span class="nc" id="L56">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Product not found: &quot; + id));</span>
+<span class="nc" id="L57">        return toDto(product);</span>
+    }
+
+    @Transactional
+    public ProductDto create(ProductDto dto) {
+<span class="fc" id="L62">        Category category = null;</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (dto.getCategoryId() != null) {</span>
+<span class="fc" id="L64">            category = categoryRepository.findById(dto.getCategoryId())</span>
+<span class="pc" id="L65">                    .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Category not found: &quot; + dto.getCategoryId()));</span>
+        }
+<span class="fc" id="L67">        Product product = Product.builder()</span>
+<span class="fc" id="L68">                .name(dto.getName())</span>
+<span class="fc" id="L69">                .description(dto.getDescription())</span>
+<span class="fc" id="L70">                .price(dto.getPrice())</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">                .stock(dto.getStock() != null ? dto.getStock() : 0)</span>
+<span class="fc" id="L72">                .deleted(false)</span>
+<span class="fc" id="L73">                .category(category)</span>
+<span class="fc" id="L74">                .build();</span>
+<span class="fc" id="L75">        product = productRepository.save(product);</span>
+<span class="fc" id="L76">        return toDto(product);</span>
+    }
+
+    @Transactional
+    public ProductDto update(Long id, ProductDto dto) {
+<span class="nc" id="L81">        Product product = productRepository.findById(id)</span>
+<span class="nc" id="L82">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Product not found: &quot; + id));</span>
+<span class="nc" id="L83">        product.setName(dto.getName());</span>
+<span class="nc" id="L84">        product.setDescription(dto.getDescription());</span>
+<span class="nc" id="L85">        product.setPrice(dto.getPrice());</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        product.setStock(dto.getStock() != null ? dto.getStock() : 0);</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (dto.getCategoryId() != null) {</span>
+<span class="nc" id="L88">            Category category = categoryRepository.findById(dto.getCategoryId())</span>
+<span class="nc" id="L89">                    .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Category not found: &quot; + dto.getCategoryId()));</span>
+<span class="nc" id="L90">            product.setCategory(category);</span>
+<span class="nc" id="L91">        } else {</span>
+<span class="nc" id="L92">            product.setCategory(null);</span>
+        }
+<span class="nc" id="L94">        product = productRepository.save(product);</span>
+<span class="nc" id="L95">        return toDto(product);</span>
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+<span class="fc" id="L100">        Product product = productRepository.findById(id)</span>
+<span class="pc" id="L101">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Product not found: &quot; + id));</span>
+<span class="fc" id="L102">        product.setDeleted(true);</span>
+<span class="fc" id="L103">        productRepository.save(product);</span>
+<span class="fc" id="L104">    }</span>
+
+    @Transactional
+    public ProductDto updateStock(Long id, Integer stock) {
+<span class="fc" id="L108">        Product product = productRepository.findById(id)</span>
+<span class="pc" id="L109">                .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Product not found: &quot; + id));</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if (stock &lt; 0) {</span>
+<span class="fc" id="L111">            throw new IllegalArgumentException(&quot;Stock cannot be negative&quot;);</span>
+        }
+<span class="fc" id="L113">        product.setStock(stock);</span>
+<span class="fc" id="L114">        product = productRepository.save(product);</span>
+<span class="fc" id="L115">        return toDto(product);</span>
+    }
+
+    private ProductDto toDto(Product p) {
+<span class="fc" id="L119">        return ProductDto.builder()</span>
+<span class="fc" id="L120">                .id(p.getId())</span>
+<span class="fc" id="L121">                .name(p.getName())</span>
+<span class="fc" id="L122">                .description(p.getDescription())</span>
+<span class="fc" id="L123">                .price(p.getPrice())</span>
+<span class="fc" id="L124">                .stock(p.getStock())</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">                .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">                .categoryName(p.getCategory() != null ? p.getCategory().getName() : null)</span>
+<span class="fc" id="L127">                .build();</span>
+    }
+
+    private PageResponse&lt;ProductDto&gt; toPageResponse(Page&lt;Product&gt; page) {
+<span class="nc" id="L131">        return PageResponse.&lt;ProductDto&gt;builder()</span>
+<span class="nc" id="L132">                .content(page.getContent().stream().map(this::toDto).toList())</span>
+<span class="nc" id="L133">                .page(page.getNumber())</span>
+<span class="nc" id="L134">                .size(page.getSize())</span>
+<span class="nc" id="L135">                .totalElements(page.getTotalElements())</span>
+<span class="nc" id="L136">                .totalPages(page.getTotalPages())</span>
+<span class="nc" id="L137">                .first(page.isFirst())</span>
+<span class="nc" id="L138">                .last(page.isLast())</span>
+<span class="nc" id="L139">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
