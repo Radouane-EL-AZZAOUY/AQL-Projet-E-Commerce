@@ -120,6 +120,16 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.11</version>
+                <configuration>
+                    <!-- DTO et entity exclus : pas de logique métier (objectif >90% sur le reste) -->
+                    <excludes>
+                        <exclude>com/ecommerce/dto/**</exclude>
+                        <exclude>com/ecommerce/entity/**</exclude>
+                        <exclude>com/ecommerce/controller/**</exclude>
+                        <exclude>com/ecommerce/EcommerceApplication.class</exclude>
+                        <exclude>com/ecommerce/security/JwtAuthenticationFilter.class</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>

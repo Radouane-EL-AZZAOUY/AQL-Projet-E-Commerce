@@ -1,6 +1,12 @@
-com\ecommerce\controller\ProductControllerIT.class
+com\ecommerce\service\CategoryServiceTest.class
 com\ecommerce\service\OrderServiceTest.class
+com\ecommerce\service\JwtTokenProviderServiceTest.class
+com\ecommerce\security\CustomUserDetailsServiceTest.class
+com\ecommerce\service\ProductServiceTest.class
+com\ecommerce\controller\ProductControllerIT.class
+com\ecommerce\config\DataInitializerTest.class
+com\ecommerce\security\JwtTokenProviderTest.class
 com\ecommerce\service\AuthServiceTest.class
 com\ecommerce\controller\AuthControllerIT.class
-com\ecommerce\service\ProductServiceTest.class
+com\ecommerce\exception\GlobalExceptionHandlerTest.class
 com\ecommerce\service\CartServiceTest.class

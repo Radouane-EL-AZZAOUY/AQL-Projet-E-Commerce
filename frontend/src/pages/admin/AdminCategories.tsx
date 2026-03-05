@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { admin, type Category } from '../../api/client';
+import Modal from '../../components/Modal';
 
 export default function AdminCategories() {
   const [list, setList] = useState<Category[]>([]);
@@ -9,6 +10,8 @@ export default function AdminCategories() {
   const [editing, setEditing] = useState<Category | null>(null);
   const [editName, setEditName] = useState('');
   const [newName, setNewName] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModal, setIsEditModal] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -21,12 +24,12 @@ export default function AdminCategories() {
 
   useEffect(() => load(), []);
 
-  const handleCreate = async () => {
-    if (!newName.trim()) return;
+  const handleCreate = async (name: string) => {
+    if (!name.trim()) return;
     setError('');
     setSuccess('');
     try {
-      await admin.categories.create({ name: newName.trim() });
+      await admin.categories.create({ name: name.trim() });
       setNewName('');
       setSuccess('Catégorie créée.');
       load();
@@ -38,6 +41,8 @@ export default function AdminCategories() {
   const startEdit = (c: Category) => {
     setEditing(c);
     setEditName(c.name);
+    setIsEditModal(true);
+    setIsModalOpen(true);
   };
 
   const handleUpdate = async () => {
@@ -46,13 +51,26 @@ export default function AdminCategories() {
     setSuccess('');
     try {
       await admin.categories.update(editing.id, { name: editName.trim() });
-      setEditing(null);
-      setEditName('');
+      closeModal();
       setSuccess('Catégorie mise à jour.');
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur');
     }
+  };
+
+  const openCreateModal = () => {
+    setEditing(null);
+    setEditName('');
+    setIsEditModal(false);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsEditModal(false);
+    setEditing(null);
+    setEditName('');
   };
 
   const handleDelete = async (id: number) => {
@@ -73,15 +91,10 @@ export default function AdminCategories() {
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
-      <div className="card admin-form-card">
-        <h3 className="card-header">Nouvelle catégorie</h3>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-          <div className="form-group" style={{ flex: 1, minWidth: 200, marginBottom: 0 }}>
-            <label>Nom</label>
-            <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nom de la catégorie" />
-          </div>
-          <button type="button" className="btn btn-primary" onClick={handleCreate}>Ajouter</button>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+        <button type="button" className="btn btn-primary" onClick={openCreateModal}>
+          Nouvelle catégorie
+        </button>
       </div>
 
       {loading ? (
@@ -101,20 +114,21 @@ export default function AdminCategories() {
                 <tr key={c.id}>
                   <td>{c.id}</td>
                   <td>
-                    {editing?.id === c.id ? (
-                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <input value={editName} onChange={(e) => setEditName(e.target.value)} style={{ maxWidth: 220 }} onKeyDown={(e) => e.key === 'Enter' && handleUpdate()} />
-                        <button type="button" className="btn btn-primary btn-sm" onClick={handleUpdate}>Enregistrer</button>
-                        <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setEditing(null); setEditName(''); }}>Annuler</button>
-                      </div>
-                    ) : (
-                      <span onClick={() => startEdit(c)} style={{ cursor: 'pointer', fontWeight: 500 }}>{c.name}</span>
-                    )}
+                    <span
+                      onClick={() => startEdit(c)}
+                      style={{ cursor: 'pointer', fontWeight: 500 }}
+                    >
+                      {c.name}
+                    </span>
                   </td>
                   <td>
-                    {editing?.id !== c.id && (
-                      <button type="button" className="btn btn-danger btn-sm" onClick={() => handleDelete(c.id)}>Supprimer</button>
-                    )}
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => handleDelete(c.id)}
+                    >
+                      Supprimer
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -127,7 +141,40 @@ export default function AdminCategories() {
           <p>Aucune catégorie. Ajoutez-en une ci-dessus.</p>
         </div>
       )}
-      <style>{`.admin-form-card { margin-bottom: 1.5rem; }`}</style>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title={isEditModal ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
+      >
+        <div className="form-group" style={{ marginBottom: '1rem' }}>
+          <label>Nom</label>
+          <input
+            value={isEditModal ? editName : newName}
+            onChange={(e) =>
+              isEditModal ? setEditName(e.target.value) : setNewName(e.target.value)
+            }
+            placeholder="Nom de la catégorie"
+          />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+          <button type="button" className="btn btn-secondary" onClick={closeModal}>
+            Annuler
+          </button>
+          {isEditModal ? (
+            <button type="button" className="btn btn-primary" onClick={handleUpdate}>
+              Enregistrer
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleCreate(newName)}
+            >
+              Ajouter
+            </button>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -1,9 +1,11 @@
 package com.ecommerce.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,14 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+        SecurityScheme bearerScheme = new SecurityScheme()
+                .name("Bearer Authentication")
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("JWT");
+
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList("Bearer Authentication");
+
         return new OpenAPI()
                 .info(new Info()
                         .title("E-Commerce API")
@@ -26,6 +36,8 @@ public class OpenApiConfig {
                                 "Auth: POST /auth/login ou /auth/register pour obtenir un token JWT, puis utiliser l'en-tête Authorization: Bearer <token>."))
                 .servers(List.of(
                         new Server().url("/api").description("Context path API"),
-                        new Server().url("http://localhost:" + serverPort + "/api").description("Backend local")));
+                        new Server().url("http://localhost:" + serverPort + "/api").description("Backend local")))
+                .components(new Components().addSecuritySchemes("Bearer Authentication", bearerScheme))
+                .addSecurityItem(securityRequirement);
     }
 }

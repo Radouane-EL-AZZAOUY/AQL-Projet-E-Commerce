@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-<span class="nc" id="L8">@RequiredArgsConstructor</span>
+<span class="fc" id="L8">@RequiredArgsConstructor</span>
 public class JwtTokenProviderService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
     public String generateToken(String username, Long userId) {
-<span class="nc" id="L14">        return jwtTokenProvider.generateToken(username, userId);</span>
+<span class="fc" id="L14">        return jwtTokenProvider.generateToken(username, userId);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

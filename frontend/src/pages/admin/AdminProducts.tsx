@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { admin, type Product, type Category } from '../../api/client';
+import Modal from '../../components/Modal';
 
 export default function AdminProducts() {
   const [data, setData] = useState<{ content: Product[]; totalPages: number } | null>(null);
@@ -10,6 +11,7 @@ export default function AdminProducts() {
   const [success, setSuccess] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState({ name: '', description: '', price: 0, stock: 0, categoryId: '' as number | '' });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadProducts = () => {
     setLoading(true);
@@ -45,8 +47,7 @@ export default function AdminProducts() {
         await admin.products.create(payload);
         setSuccess('Produit créé.');
       }
-      setEditing(null);
-      setForm({ name: '', description: '', price: 0, stock: 0, categoryId: '' });
+      handleCloseModal();
       loadProducts();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur');
@@ -68,11 +69,19 @@ export default function AdminProducts() {
   const openEdit = (p: Product) => {
     setEditing(p);
     setForm({ name: p.name, description: p.description || '', price: p.price, stock: p.stock, categoryId: p.categoryId ?? '' });
+    setIsModalOpen(true);
   };
 
-  const cancelEdit = () => {
+  const handleCreate = () => {
     setEditing(null);
     setForm({ name: '', description: '', price: 0, stock: 0, categoryId: '' });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setEditing(null);
+    setForm({ name: '', description: '', price: 0, stock: 0, categoryId: '' });
+    setIsModalOpen(false);
   };
 
   return (
@@ -81,39 +90,10 @@ export default function AdminProducts() {
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
-      <div className="card admin-form-card">
-        <h3 className="card-header">{editing ? 'Modifier le produit' : 'Nouveau produit'}</h3>
-        <div className="form-row">
-          <div className="form-group">
-            <label>Nom</label>
-            <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Nom du produit" />
-          </div>
-          <div className="form-group">
-            <label>Description</label>
-            <input value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description (optionnel)" />
-          </div>
-          <div className="form-group">
-            <label>Catégorie</label>
-            <select value={form.categoryId} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value === '' ? '' : Number(e.target.value) }))}>
-              <option value="">— Aucune —</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Prix (€)</label>
-            <input type="number" step="0.01" min={0} value={form.price || ''} onChange={(e) => setForm((f) => ({ ...f, price: Number(e.target.value) || 0 }))} />
-          </div>
-          <div className="form-group">
-            <label>Stock</label>
-            <input type="number" min={0} value={form.stock || ''} onChange={(e) => setForm((f) => ({ ...f, stock: Number(e.target.value) || 0 }))} />
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end' }}>
-            <button type="button" className="btn btn-primary" onClick={handleSave}>Enregistrer</button>
-            {editing && <button type="button" className="btn btn-secondary" onClick={cancelEdit}>Annuler</button>}
-          </div>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+        <button type="button" className="btn btn-primary" onClick={handleCreate}>
+          Nouveau produit
+        </button>
       </div>
 
       {loading ? (
@@ -158,9 +138,87 @@ export default function AdminProducts() {
           )}
         </>
       )}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={editing ? 'Modifier le produit' : 'Nouveau produit'}
+      >
+        <div className="form-row" style={{ marginBottom: '1rem' }}>
+          <div className="form-group">
+            <label>Nom</label>
+            <input
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              placeholder="Nom du produit"
+            />
+          </div>
+          <div className="form-group">
+            <label>Description</label>
+            <input
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              placeholder="Description (optionnel)"
+            />
+          </div>
+          <div className="form-group">
+            <label>Catégorie</label>
+            <select
+              value={form.categoryId}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  categoryId: e.target.value === '' ? '' : Number(e.target.value),
+                }))
+              }
+            >
+              <option value="">— Aucune —</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label>Prix (€)</label>
+            <input
+              type="number"
+              step="0.01"
+              min={0}
+              value={form.price || ''}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  price: Number(e.target.value) || 0,
+                }))
+              }
+            />
+          </div>
+          <div className="form-group">
+            <label>Stock</label>
+            <input
+              type="number"
+              min={0}
+              value={form.stock || ''}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  stock: Number(e.target.value) || 0,
+                }))
+              }
+            />
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+          <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+            Annuler
+          </button>
+          <button type="button" className="btn btn-primary" onClick={handleSave}>
+            Enregistrer
+          </button>
+        </div>
+      </Modal>
       <style>{`
-        .admin-form-card { margin-bottom: 1.5rem; }
-        .form-row { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
         .pagination { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
         .pagination-info { font-size: 0.9rem; color: var(--color-text-muted); }
       `}</style>

@@ -5,25 +5,25 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConfigurationProperties(prefix = &quot;jwt&quot;)
-<span class="nc" id="L8">public class JwtProperties {</span>
+<span class="fc" id="L8">public class JwtProperties {</span>
 
     private String secret;
-<span class="nc" id="L11">    private long expirationMs = 86400000;</span>
+<span class="fc" id="L11">    private long expirationMs = 86400000;</span>
 
     public String getSecret() {
-<span class="nc" id="L14">        return secret;</span>
+<span class="fc" id="L14">        return secret;</span>
     }
 
     public void setSecret(String secret) {
-<span class="nc" id="L18">        this.secret = secret;</span>
-<span class="nc" id="L19">    }</span>
+<span class="fc" id="L18">        this.secret = secret;</span>
+<span class="fc" id="L19">    }</span>
 
     public long getExpirationMs() {
-<span class="nc" id="L22">        return expirationMs;</span>
+<span class="fc" id="L22">        return expirationMs;</span>
     }
 
     public void setExpirationMs(long expirationMs) {
-<span class="nc" id="L26">        this.expirationMs = expirationMs;</span>
-<span class="nc" id="L27">    }</span>
+<span class="fc" id="L26">        this.expirationMs = expirationMs;</span>
+<span class="fc" id="L27">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Component
-<span class="nc" id="L18">@RequiredArgsConstructor</span>
+<span class="fc" id="L18">@RequiredArgsConstructor</span>
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -27,149 +27,149 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (userRepository.count() &gt; 0) return;</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (userRepository.count() &gt; 0) return;</span>
 
         // Admin
-<span class="nc" id="L33">        User admin = User.builder()</span>
-<span class="nc" id="L34">                .username(&quot;admin&quot;)</span>
-<span class="nc" id="L35">                .email(&quot;admin@shop.com&quot;)</span>
-<span class="nc" id="L36">                .password(passwordEncoder.encode(&quot;admin123&quot;))</span>
-<span class="nc" id="L37">                .role(Role.ADMIN)</span>
-<span class="nc" id="L38">                .build();</span>
-<span class="nc" id="L39">        admin = userRepository.save(admin);</span>
-<span class="nc" id="L40">        cartService.createCartForUser(admin);</span>
+<span class="fc" id="L33">        User admin = User.builder()</span>
+<span class="fc" id="L34">                .username(&quot;admin&quot;)</span>
+<span class="fc" id="L35">                .email(&quot;admin@shop.com&quot;)</span>
+<span class="fc" id="L36">                .password(passwordEncoder.encode(&quot;admin123&quot;))</span>
+<span class="fc" id="L37">                .role(Role.ADMIN)</span>
+<span class="fc" id="L38">                .build();</span>
+<span class="fc" id="L39">        admin = userRepository.save(admin);</span>
+<span class="fc" id="L40">        cartService.createCartForUser(admin);</span>
 
         // Client de démo
-<span class="nc" id="L43">        User client = User.builder()</span>
-<span class="nc" id="L44">                .username(&quot;client&quot;)</span>
-<span class="nc" id="L45">                .email(&quot;client@example.com&quot;)</span>
-<span class="nc" id="L46">                .password(passwordEncoder.encode(&quot;client123&quot;))</span>
-<span class="nc" id="L47">                .role(Role.CLIENT)</span>
-<span class="nc" id="L48">                .build();</span>
-<span class="nc" id="L49">        client = userRepository.save(client);</span>
-<span class="nc" id="L50">        cartService.createCartForUser(client);</span>
+<span class="fc" id="L43">        User client = User.builder()</span>
+<span class="fc" id="L44">                .username(&quot;client&quot;)</span>
+<span class="fc" id="L45">                .email(&quot;client@example.com&quot;)</span>
+<span class="fc" id="L46">                .password(passwordEncoder.encode(&quot;client123&quot;))</span>
+<span class="fc" id="L47">                .role(Role.CLIENT)</span>
+<span class="fc" id="L48">                .build();</span>
+<span class="fc" id="L49">        client = userRepository.save(client);</span>
+<span class="fc" id="L50">        cartService.createCartForUser(client);</span>
 
         // Catégories
-<span class="nc" id="L53">        Category catElectro = Category.builder().name(&quot;Électronique&quot;).build();</span>
-<span class="nc" id="L54">        Category catVetements = Category.builder().name(&quot;Vêtements&quot;).build();</span>
-<span class="nc" id="L55">        Category catMaison = Category.builder().name(&quot;Maison &amp; Cuisine&quot;).build();</span>
-<span class="nc" id="L56">        Category catSport = Category.builder().name(&quot;Sport&quot;).build();</span>
-<span class="nc" id="L57">        Category catLivres = Category.builder().name(&quot;Livres&quot;).build();</span>
-<span class="nc" id="L58">        categoryRepository.saveAll(List.of(catElectro, catVetements, catMaison, catSport, catLivres));</span>
+<span class="fc" id="L53">        Category catElectro = Category.builder().name(&quot;Électronique&quot;).build();</span>
+<span class="fc" id="L54">        Category catVetements = Category.builder().name(&quot;Vêtements&quot;).build();</span>
+<span class="fc" id="L55">        Category catMaison = Category.builder().name(&quot;Maison &amp; Cuisine&quot;).build();</span>
+<span class="fc" id="L56">        Category catSport = Category.builder().name(&quot;Sport&quot;).build();</span>
+<span class="fc" id="L57">        Category catLivres = Category.builder().name(&quot;Livres&quot;).build();</span>
+<span class="fc" id="L58">        categoryRepository.saveAll(List.of(catElectro, catVetements, catMaison, catSport, catLivres));</span>
 
         // Produits Électronique
-<span class="nc" id="L61">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L62">                .name(&quot;Smartphone X Pro&quot;)</span>
-<span class="nc" id="L63">                .description(&quot;Smartphone dernière génération, écran 6.5\&quot;, 128 Go.&quot;)</span>
-<span class="nc" id="L64">                .price(new BigDecimal(&quot;599.99&quot;))</span>
-<span class="nc" id="L65">                .stock(50)</span>
-<span class="nc" id="L66">                .category(catElectro)</span>
-<span class="nc" id="L67">                .deleted(false)</span>
-<span class="nc" id="L68">                .build());</span>
-<span class="nc" id="L69">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L70">                .name(&quot;Écouteurs sans fil&quot;)</span>
-<span class="nc" id="L71">                .description(&quot;Écouteurs Bluetooth avec réduction de bruit.&quot;)</span>
-<span class="nc" id="L72">                .price(new BigDecimal(&quot;89.99&quot;))</span>
-<span class="nc" id="L73">                .stock(120)</span>
-<span class="nc" id="L74">                .category(catElectro)</span>
-<span class="nc" id="L75">                .deleted(false)</span>
-<span class="nc" id="L76">                .build());</span>
-<span class="nc" id="L77">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L78">                .name(&quot;Chargeur rapide 65W&quot;)</span>
-<span class="nc" id="L79">                .description(&quot;Chargeur USB-C compatible fast charging.&quot;)</span>
-<span class="nc" id="L80">                .price(new BigDecimal(&quot;34.99&quot;))</span>
-<span class="nc" id="L81">                .stock(200)</span>
-<span class="nc" id="L82">                .category(catElectro)</span>
-<span class="nc" id="L83">                .deleted(false)</span>
-<span class="nc" id="L84">                .build());</span>
-<span class="nc" id="L85">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L86">                .name(&quot;Clavier mécanique&quot;)</span>
-<span class="nc" id="L87">                .description(&quot;Clavier gaming RGB, switches bleus.&quot;)</span>
-<span class="nc" id="L88">                .price(new BigDecimal(&quot;129.00&quot;))</span>
-<span class="nc" id="L89">                .stock(45)</span>
-<span class="nc" id="L90">                .category(catElectro)</span>
-<span class="nc" id="L91">                .deleted(false)</span>
-<span class="nc" id="L92">                .build());</span>
+<span class="fc" id="L61">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L62">                .name(&quot;Smartphone X Pro&quot;)</span>
+<span class="fc" id="L63">                .description(&quot;Smartphone dernière génération, écran 6.5\&quot;, 128 Go.&quot;)</span>
+<span class="fc" id="L64">                .price(new BigDecimal(&quot;599.99&quot;))</span>
+<span class="fc" id="L65">                .stock(50)</span>
+<span class="fc" id="L66">                .category(catElectro)</span>
+<span class="fc" id="L67">                .deleted(false)</span>
+<span class="fc" id="L68">                .build());</span>
+<span class="fc" id="L69">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L70">                .name(&quot;Écouteurs sans fil&quot;)</span>
+<span class="fc" id="L71">                .description(&quot;Écouteurs Bluetooth avec réduction de bruit.&quot;)</span>
+<span class="fc" id="L72">                .price(new BigDecimal(&quot;89.99&quot;))</span>
+<span class="fc" id="L73">                .stock(120)</span>
+<span class="fc" id="L74">                .category(catElectro)</span>
+<span class="fc" id="L75">                .deleted(false)</span>
+<span class="fc" id="L76">                .build());</span>
+<span class="fc" id="L77">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L78">                .name(&quot;Chargeur rapide 65W&quot;)</span>
+<span class="fc" id="L79">                .description(&quot;Chargeur USB-C compatible fast charging.&quot;)</span>
+<span class="fc" id="L80">                .price(new BigDecimal(&quot;34.99&quot;))</span>
+<span class="fc" id="L81">                .stock(200)</span>
+<span class="fc" id="L82">                .category(catElectro)</span>
+<span class="fc" id="L83">                .deleted(false)</span>
+<span class="fc" id="L84">                .build());</span>
+<span class="fc" id="L85">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L86">                .name(&quot;Clavier mécanique&quot;)</span>
+<span class="fc" id="L87">                .description(&quot;Clavier gaming RGB, switches bleus.&quot;)</span>
+<span class="fc" id="L88">                .price(new BigDecimal(&quot;129.00&quot;))</span>
+<span class="fc" id="L89">                .stock(45)</span>
+<span class="fc" id="L90">                .category(catElectro)</span>
+<span class="fc" id="L91">                .deleted(false)</span>
+<span class="fc" id="L92">                .build());</span>
 
         // Produits Vêtements
-<span class="nc" id="L95">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L96">                .name(&quot;T-shirt Basic&quot;)</span>
-<span class="nc" id="L97">                .description(&quot;T-shirt en coton bio, coupe unisexe.&quot;)</span>
-<span class="nc" id="L98">                .price(new BigDecimal(&quot;19.99&quot;))</span>
-<span class="nc" id="L99">                .stock(200)</span>
-<span class="nc" id="L100">                .category(catVetements)</span>
-<span class="nc" id="L101">                .deleted(false)</span>
-<span class="nc" id="L102">                .build());</span>
-<span class="nc" id="L103">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L104">                .name(&quot;Jean slim&quot;)</span>
-<span class="nc" id="L105">                .description(&quot;Jean coupe slim, matière stretch.&quot;)</span>
-<span class="nc" id="L106">                .price(new BigDecimal(&quot;49.99&quot;))</span>
-<span class="nc" id="L107">                .stock(80)</span>
-<span class="nc" id="L108">                .category(catVetements)</span>
-<span class="nc" id="L109">                .deleted(false)</span>
-<span class="nc" id="L110">                .build());</span>
-<span class="nc" id="L111">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L112">                .name(&quot;Pull en laine&quot;)</span>
-<span class="nc" id="L113">                .description(&quot;Pull col rond, laine mérinos.&quot;)</span>
-<span class="nc" id="L114">                .price(new BigDecimal(&quot;79.99&quot;))</span>
-<span class="nc" id="L115">                .stock(35)</span>
-<span class="nc" id="L116">                .category(catVetements)</span>
-<span class="nc" id="L117">                .deleted(false)</span>
-<span class="nc" id="L118">                .build());</span>
+<span class="fc" id="L95">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L96">                .name(&quot;T-shirt Basic&quot;)</span>
+<span class="fc" id="L97">                .description(&quot;T-shirt en coton bio, coupe unisexe.&quot;)</span>
+<span class="fc" id="L98">                .price(new BigDecimal(&quot;19.99&quot;))</span>
+<span class="fc" id="L99">                .stock(200)</span>
+<span class="fc" id="L100">                .category(catVetements)</span>
+<span class="fc" id="L101">                .deleted(false)</span>
+<span class="fc" id="L102">                .build());</span>
+<span class="fc" id="L103">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L104">                .name(&quot;Jean slim&quot;)</span>
+<span class="fc" id="L105">                .description(&quot;Jean coupe slim, matière stretch.&quot;)</span>
+<span class="fc" id="L106">                .price(new BigDecimal(&quot;49.99&quot;))</span>
+<span class="fc" id="L107">                .stock(80)</span>
+<span class="fc" id="L108">                .category(catVetements)</span>
+<span class="fc" id="L109">                .deleted(false)</span>
+<span class="fc" id="L110">                .build());</span>
+<span class="fc" id="L111">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L112">                .name(&quot;Pull en laine&quot;)</span>
+<span class="fc" id="L113">                .description(&quot;Pull col rond, laine mérinos.&quot;)</span>
+<span class="fc" id="L114">                .price(new BigDecimal(&quot;79.99&quot;))</span>
+<span class="fc" id="L115">                .stock(35)</span>
+<span class="fc" id="L116">                .category(catVetements)</span>
+<span class="fc" id="L117">                .deleted(false)</span>
+<span class="fc" id="L118">                .build());</span>
 
         // Produits Maison
-<span class="nc" id="L121">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L122">                .name(&quot;Cafetière programmable&quot;)</span>
-<span class="nc" id="L123">                .description(&quot;Cafetière 12 tasses, minuterie et maintien au chaud.&quot;)</span>
-<span class="nc" id="L124">                .price(new BigDecimal(&quot;59.99&quot;))</span>
-<span class="nc" id="L125">                .stock(60)</span>
-<span class="nc" id="L126">                .category(catMaison)</span>
-<span class="nc" id="L127">                .deleted(false)</span>
-<span class="nc" id="L128">                .build());</span>
-<span class="nc" id="L129">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L130">                .name(&quot;Set de couverts 24 pièces&quot;)</span>
-<span class="nc" id="L131">                .description(&quot;Inox 18/10, lave-vaisselle.&quot;)</span>
-<span class="nc" id="L132">                .price(new BigDecimal(&quot;44.99&quot;))</span>
-<span class="nc" id="L133">                .stock(40)</span>
-<span class="nc" id="L134">                .category(catMaison)</span>
-<span class="nc" id="L135">                .deleted(false)</span>
-<span class="nc" id="L136">                .build());</span>
+<span class="fc" id="L121">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L122">                .name(&quot;Cafetière programmable&quot;)</span>
+<span class="fc" id="L123">                .description(&quot;Cafetière 12 tasses, minuterie et maintien au chaud.&quot;)</span>
+<span class="fc" id="L124">                .price(new BigDecimal(&quot;59.99&quot;))</span>
+<span class="fc" id="L125">                .stock(60)</span>
+<span class="fc" id="L126">                .category(catMaison)</span>
+<span class="fc" id="L127">                .deleted(false)</span>
+<span class="fc" id="L128">                .build());</span>
+<span class="fc" id="L129">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L130">                .name(&quot;Set de couverts 24 pièces&quot;)</span>
+<span class="fc" id="L131">                .description(&quot;Inox 18/10, lave-vaisselle.&quot;)</span>
+<span class="fc" id="L132">                .price(new BigDecimal(&quot;44.99&quot;))</span>
+<span class="fc" id="L133">                .stock(40)</span>
+<span class="fc" id="L134">                .category(catMaison)</span>
+<span class="fc" id="L135">                .deleted(false)</span>
+<span class="fc" id="L136">                .build());</span>
 
         // Produits Sport
-<span class="nc" id="L139">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L140">                .name(&quot;Ballon de football&quot;)</span>
-<span class="nc" id="L141">                .description(&quot;Taille 5, cuir synthétique.&quot;)</span>
-<span class="nc" id="L142">                .price(new BigDecimal(&quot;24.99&quot;))</span>
-<span class="nc" id="L143">                .stock(90)</span>
-<span class="nc" id="L144">                .category(catSport)</span>
-<span class="nc" id="L145">                .deleted(false)</span>
-<span class="nc" id="L146">                .build());</span>
-<span class="nc" id="L147">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L148">                .name(&quot;Tapis de yoga&quot;)</span>
-<span class="nc" id="L149">                .description(&quot;Tapis antidérapant 6 mm, 183 x 61 cm.&quot;)</span>
-<span class="nc" id="L150">                .price(new BigDecimal(&quot;29.99&quot;))</span>
-<span class="nc" id="L151">                .stock(70)</span>
-<span class="nc" id="L152">                .category(catSport)</span>
-<span class="nc" id="L153">                .deleted(false)</span>
-<span class="nc" id="L154">                .build());</span>
+<span class="fc" id="L139">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L140">                .name(&quot;Ballon de football&quot;)</span>
+<span class="fc" id="L141">                .description(&quot;Taille 5, cuir synthétique.&quot;)</span>
+<span class="fc" id="L142">                .price(new BigDecimal(&quot;24.99&quot;))</span>
+<span class="fc" id="L143">                .stock(90)</span>
+<span class="fc" id="L144">                .category(catSport)</span>
+<span class="fc" id="L145">                .deleted(false)</span>
+<span class="fc" id="L146">                .build());</span>
+<span class="fc" id="L147">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L148">                .name(&quot;Tapis de yoga&quot;)</span>
+<span class="fc" id="L149">                .description(&quot;Tapis antidérapant 6 mm, 183 x 61 cm.&quot;)</span>
+<span class="fc" id="L150">                .price(new BigDecimal(&quot;29.99&quot;))</span>
+<span class="fc" id="L151">                .stock(70)</span>
+<span class="fc" id="L152">                .category(catSport)</span>
+<span class="fc" id="L153">                .deleted(false)</span>
+<span class="fc" id="L154">                .build());</span>
 
         // Produits Livres
-<span class="nc" id="L157">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L158">                .name(&quot;Guide du développement web&quot;)</span>
-<span class="nc" id="L159">                .description(&quot;Ouvrage de référence HTML, CSS, JavaScript.&quot;)</span>
-<span class="nc" id="L160">                .price(new BigDecimal(&quot;35.00&quot;))</span>
-<span class="nc" id="L161">                .stock(25)</span>
-<span class="nc" id="L162">                .category(catLivres)</span>
-<span class="nc" id="L163">                .deleted(false)</span>
-<span class="nc" id="L164">                .build());</span>
-<span class="nc" id="L165">        productRepository.save(Product.builder()</span>
-<span class="nc" id="L166">                .name(&quot;Roman best-seller&quot;)</span>
-<span class="nc" id="L167">                .description(&quot;Édition brochée, 400 pages.&quot;)</span>
-<span class="nc" id="L168">                .price(new BigDecimal(&quot;14.99&quot;))</span>
-<span class="nc" id="L169">                .stock(150)</span>
-<span class="nc" id="L170">                .category(catLivres)</span>
-<span class="nc" id="L171">                .deleted(false)</span>
-<span class="nc" id="L172">                .build());</span>
-<span class="nc" id="L173">    }</span>
+<span class="fc" id="L157">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L158">                .name(&quot;Guide du développement web&quot;)</span>
+<span class="fc" id="L159">                .description(&quot;Ouvrage de référence HTML, CSS, JavaScript.&quot;)</span>
+<span class="fc" id="L160">                .price(new BigDecimal(&quot;35.00&quot;))</span>
+<span class="fc" id="L161">                .stock(25)</span>
+<span class="fc" id="L162">                .category(catLivres)</span>
+<span class="fc" id="L163">                .deleted(false)</span>
+<span class="fc" id="L164">                .build());</span>
+<span class="fc" id="L165">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L166">                .name(&quot;Roman best-seller&quot;)</span>
+<span class="fc" id="L167">                .description(&quot;Édition brochée, 400 pages.&quot;)</span>
+<span class="fc" id="L168">                .price(new BigDecimal(&quot;14.99&quot;))</span>
+<span class="fc" id="L169">                .stock(150)</span>
+<span class="fc" id="L170">                .category(catLivres)</span>
+<span class="fc" id="L171">                .deleted(false)</span>
+<span class="fc" id="L172">                .build());</span>
+<span class="fc" id="L173">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
