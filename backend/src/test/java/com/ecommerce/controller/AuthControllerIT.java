@@ -24,6 +24,8 @@ class AuthControllerIT {
     @Autowired
     private ObjectMapper objectMapper;
 
+
+    
     @Test
     void register_ReturnsTokenAndUser() throws Exception {
         RegisterRequest request = new RegisterRequest("ituser", "ituser@test.com", "password123");

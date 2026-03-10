@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { products, categories, type Product, type Category } from '../api/client';
+import LoadingState from '../components/LoadingState';
+import EmptyState from '../components/EmptyState';
 
 export default function Catalog() {
   const [data, setData] = useState<{ content: Product[]; totalPages: number; totalElements: number } | null>(null);
@@ -33,39 +35,51 @@ export default function Catalog() {
   }, [page, search, categoryId]);
 
   return (
-    <div className="container page catalog-page">
-      <h1 className="page-title">Catalogue</h1>
-      <div className="catalog-toolbar">
-        <input
-          type="search"
-          placeholder="Rechercher un produit..."
-          value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-          className="search-input"
-        />
-        <select
-          value={categoryId}
-          onChange={(e) => { setCategoryId(e.target.value === '' ? '' : Number(e.target.value)); setPage(0); }}
-          className="filter-select"
-        >
-          <option value="">Toutes les catégories</option>
-          {cats.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
+    <div className="container page min-h-[50vh]">
+      <div className="mb-8">
+        <h1 className="page-title">Catalogue</h1>
+        <div className="catalog-toolbar">
+          <input
+            type="search"
+            placeholder="Rechercher un produit..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+            className="search-input"
+            aria-label="Rechercher un produit"
+          />
+          <select
+            value={categoryId}
+            onChange={(e) => { setCategoryId(e.target.value === '' ? '' : Number(e.target.value)); setPage(0); }}
+            className="filter-select"
+            aria-label="Filtrer par catégorie"
+          >
+            <option value="">Toutes les catégories</option>
+            {cats.map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
       {error && <div className="alert alert-error">{error}</div>}
       {loading ? (
-        <div className="empty-state">
-          <span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} />
-          <p>Chargement du catalogue...</p>
-        </div>
+        <LoadingState message="Chargement du catalogue..." />
       ) : data ? (
         <>
           <p className="catalog-count">{data.totalElements} produit(s)</p>
           <div className="product-grid">
             {(data.content ?? []).map((p) => (
-              <div key={p.id} className="product-card card">
+              <article key={p.id} className="product-card">
+                <Link to={`/products/${p.id}`} className="block aspect-square bg-slate-100 overflow-hidden rounded-t-xl">
+                  {p.imageUrl ? (
+                    <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-400">
+                      <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                </Link>
                 <div className="product-card-body">
                   <span className="product-category">{p.categoryName || '—'}</span>
                   <h3 className="product-name">{p.name}</h3>
@@ -74,46 +88,40 @@ export default function Catalog() {
                     Voir le produit
                   </Link>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
           {data.totalPages > 1 && (
-            <div className="pagination">
-              <button type="button" className="btn btn-secondary btn-sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
+            <nav className="pagination" aria-label="Pagination">
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                disabled={page === 0}
+                onClick={() => setPage((p) => p - 1)}
+                aria-label="Page précédente"
+              >
                 Précédent
               </button>
               <span className="pagination-info">Page {page + 1} / {data.totalPages}</span>
-              <button type="button" className="btn btn-secondary btn-sm" disabled={page >= data.totalPages - 1} onClick={() => setPage((p) => p + 1)}>
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                disabled={page >= data.totalPages - 1}
+                onClick={() => setPage((p) => p + 1)}
+                aria-label="Page suivante"
+              >
                 Suivant
               </button>
-            </div>
+            </nav>
           )}
         </>
       ) : (
-        <div className="card empty-state catalog-empty">
-          <p>Aucun produit à afficher.</p>
-          <p className="catalog-empty-hint">Vérifiez que le backend est démarré (port 8081) et que l’API répond sur <code>/api/products</code>.</p>
-        </div>
+        <EmptyState title="Aucun produit à afficher.">
+          <p className="catalog-empty-hint">
+            Vérifiez que le backend est démarré (port 8081) et que l&apos;API répond sur <code>/api/products</code>.
+          </p>
+        </EmptyState>
       )}
-      <style>{`
-        .catalog-page { min-height: 50vh; }
-        .catalog-empty { min-height: 120px; }
-        .catalog-empty-hint { font-size: 0.9rem; margin-top: 0.5rem; color: var(--color-text-muted); }
-        .catalog-empty code { background: var(--color-border); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; }
-        .catalog-toolbar { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-        .search-input { flex: 1; min-width: 200px; padding: 0.6rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 0.95rem; }
-        .search-input:focus { outline: none; border-color: var(--color-primary); }
-        .filter-select { padding: 0.6rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); min-width: 180px; }
-        .catalog-count { color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; }
-        .product-card { padding: 1.25rem; display: flex; flex-direction: column; }
-        .product-card-body { display: flex; flex-direction: column; flex: 1; }
-        .product-category { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
-        .product-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; line-height: 1.3; }
-        .product-price { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); margin-bottom: 1rem; }
-        .pagination { display: flex; align-items: center; gap: 1rem; margin-top: 2rem; justify-content: center; flex-wrap: wrap; }
-        .pagination-info { font-size: 0.9rem; color: var(--color-text-muted); }
-      `}</style>
     </div>
   );
 }

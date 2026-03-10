@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { orders as ordersApi, type Order } from '../api/client';
+import LoadingState from '../components/LoadingState';
+import EmptyState from '../components/EmptyState';
 
 export default function MyOrders() {
   const [list, setList] = useState<Order[]>([]);
@@ -18,7 +20,7 @@ export default function MyOrders() {
   if (loading) {
     return (
       <div className="container page">
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
       </div>
     );
   }
@@ -34,15 +36,13 @@ export default function MyOrders() {
     <div className="container page">
       <h1 className="page-title">Mes commandes</h1>
       {list.length === 0 ? (
-        <div className="card empty-state">
-          <div className="empty-state-icon">📦</div>
-          <p>Aucune commande pour le moment.</p>
-          <Link to="/catalog" className="btn btn-primary" style={{ marginTop: '1rem' }}>Voir le catalogue</Link>
-        </div>
+        <EmptyState icon="📦" title="Aucune commande pour le moment.">
+          <Link to="/catalog" className="btn btn-primary mt-4">Voir le catalogue</Link>
+        </EmptyState>
       ) : (
         <div className="order-list">
           {list.map((o) => (
-            <div key={o.id} className="card order-item">
+            <article key={o.id} className="card order-item">
               <div className="order-item-main">
                 <strong>Commande #{o.id}</strong>
                 <span className="order-date">{new Date(o.createdAt).toLocaleDateString('fr-FR')}</span>
@@ -52,17 +52,10 @@ export default function MyOrders() {
                 </span>
               </div>
               <Link to={`/orders/${o.id}`} className="btn btn-secondary btn-sm">Détail</Link>
-            </div>
+            </article>
           ))}
         </div>
       )}
-      <style>{`
-        .order-list { display: flex; flex-direction: column; gap: 0.75rem; }
-        .order-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; }
-        .order-item-main { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-        .order-date { color: var(--color-text-muted); font-size: 0.9rem; }
-        .order-amount { font-weight: 600; }
-      `}</style>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { admin, type Product, type Category } from '../../api/client';
 import Modal from '../../components/Modal';
+import LoadingState from '../../components/LoadingState';
 
 export default function AdminProducts() {
   const [data, setData] = useState<{ content: Product[]; totalPages: number } | null>(null);
@@ -10,7 +11,7 @@ export default function AdminProducts() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
-  const [form, setForm] = useState({ name: '', description: '', price: 0, stock: 0, categoryId: '' as number | '' });
+  const [form, setForm] = useState({ name: '', description: '', price: 0, stock: 0, categoryId: '' as number | '', imageUrl: '' });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const loadProducts = () => {
@@ -36,6 +37,7 @@ export default function AdminProducts() {
       const payload = {
         name: form.name.trim(),
         description: form.description.trim() || undefined,
+        imageUrl: form.imageUrl.trim() || undefined,
         price: Number(form.price),
         stock: Number(form.stock) || 0,
         categoryId: form.categoryId === '' ? undefined : form.categoryId,
@@ -68,19 +70,19 @@ export default function AdminProducts() {
 
   const openEdit = (p: Product) => {
     setEditing(p);
-    setForm({ name: p.name, description: p.description || '', price: p.price, stock: p.stock, categoryId: p.categoryId ?? '' });
+    setForm({ name: p.name, description: p.description || '', price: p.price, stock: p.stock, categoryId: p.categoryId ?? '', imageUrl: p.imageUrl || '' });
     setIsModalOpen(true);
   };
 
   const handleCreate = () => {
     setEditing(null);
-    setForm({ name: '', description: '', price: 0, stock: 0, categoryId: '' });
+    setForm({ name: '', description: '', price: 0, stock: 0, categoryId: '', imageUrl: '' });
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
     setEditing(null);
-    setForm({ name: '', description: '', price: 0, stock: 0, categoryId: '' });
+    setForm({ name: '', description: '', price: 0, stock: 0, categoryId: '', imageUrl: '' });
     setIsModalOpen(false);
   };
 
@@ -90,14 +92,14 @@ export default function AdminProducts() {
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+      <div className="flex justify-end mb-4">
         <button type="button" className="btn btn-primary" onClick={handleCreate}>
           Nouveau produit
         </button>
       </div>
 
       {loading ? (
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
       ) : data && (
         <>
           <div className="table-wrap">
@@ -121,7 +123,7 @@ export default function AdminProducts() {
                     <td>{p.price.toFixed(2)} €</td>
                     <td>{p.stock}</td>
                     <td>
-                      <button type="button" className="btn btn-secondary btn-sm" style={{ marginRight: '0.5rem' }} onClick={() => openEdit(p)}>Modifier</button>
+                      <button type="button" className="btn btn-secondary btn-sm mr-2" onClick={() => openEdit(p)}>Modifier</button>
                       <button type="button" className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id)}>Supprimer</button>
                     </td>
                   </tr>
@@ -130,11 +132,11 @@ export default function AdminProducts() {
             </table>
           </div>
           {data.totalPages > 1 && (
-            <div className="pagination">
+            <nav className="pagination" aria-label="Pagination produits">
               <button type="button" className="btn btn-secondary btn-sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>Précédent</button>
               <span className="pagination-info">Page {page + 1} / {data.totalPages}</span>
               <button type="button" className="btn btn-secondary btn-sm" disabled={page >= data.totalPages - 1} onClick={() => setPage((p) => p + 1)}>Suivant</button>
-            </div>
+            </nav>
           )}
         </>
       )}
@@ -143,26 +145,39 @@ export default function AdminProducts() {
         onClose={handleCloseModal}
         title={editing ? 'Modifier le produit' : 'Nouveau produit'}
       >
-        <div className="form-row" style={{ marginBottom: '1rem' }}>
+        <div className="form-group mb-4">
+          <label htmlFor="product-image">URL de l&apos;image</label>
+          <input
+            id="product-image"
+            type="url"
+            value={form.imageUrl}
+            onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
+            placeholder="https://exemple.com/image.jpg"
+          />
+        </div>
+        <div className="form-row mb-4">
           <div className="form-group">
-            <label>Nom</label>
+            <label htmlFor="product-name">Nom</label>
             <input
+              id="product-name"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder="Nom du produit"
             />
           </div>
           <div className="form-group">
-            <label>Description</label>
+            <label htmlFor="product-desc">Description</label>
             <input
+              id="product-desc"
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               placeholder="Description (optionnel)"
             />
           </div>
           <div className="form-group">
-            <label>Catégorie</label>
+            <label htmlFor="product-cat">Catégorie</label>
             <select
+              id="product-cat"
               value={form.categoryId}
               onChange={(e) =>
                 setForm((f) => ({
@@ -180,8 +195,9 @@ export default function AdminProducts() {
             </select>
           </div>
           <div className="form-group">
-            <label>Prix (€)</label>
+            <label htmlFor="product-price">Prix (€)</label>
             <input
+              id="product-price"
               type="number"
               step="0.01"
               min={0}
@@ -195,8 +211,9 @@ export default function AdminProducts() {
             />
           </div>
           <div className="form-group">
-            <label>Stock</label>
+            <label htmlFor="product-stock">Stock</label>
             <input
+              id="product-stock"
               type="number"
               min={0}
               value={form.stock || ''}
@@ -209,7 +226,7 @@ export default function AdminProducts() {
             />
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+        <div className="flex justify-end gap-2">
           <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
             Annuler
           </button>
@@ -218,10 +235,6 @@ export default function AdminProducts() {
           </button>
         </div>
       </Modal>
-      <style>{`
-        .pagination { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-        .pagination-info { font-size: 0.9rem; color: var(--color-text-muted); }
-      `}</style>
     </div>
   );
 }

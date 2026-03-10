@@ -29,6 +29,9 @@ public class Product {
 
     private String description;
 
+    @Column(name = "image_url", length = 512)
+    private String imageUrl;
+
     @NotNull
     @DecimalMin("0")
     @Column(nullable = false, precision = 10, scale = 2)

@@ -19,7 +19,7 @@ export default function Register() {
       await register(username, email, password);
       navigate('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de l\'inscription');
+      setError(err instanceof Error ? err.message : "Erreur lors de l'inscription");
     } finally {
       setLoading(false);
     }
@@ -28,58 +28,59 @@ export default function Register() {
   return (
     <div className="container page">
       <div className="auth-card">
-        <h2 className="page-title">Inscription</h2>
-        <p className="page-subtitle">Créez un compte pour passer des commandes et suivre votre historique.</p>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Identifiant</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              minLength={2}
-              autoComplete="username"
-              placeholder="Choisissez un identifiant"
-            />
-          </div>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-              placeholder="votre@email.com"
-            />
-          </div>
-          <div className="form-group">
-            <label>Mot de passe</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              autoComplete="new-password"
-              placeholder="Au moins 6 caractères"
-            />
-          </div>
-          {error && <div className="alert alert-error">{error}</div>}
-          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
-            {loading ? <span className="loading-spinner" /> : null}
-            {loading ? ' Inscription...' : 'S\'inscrire'}
-          </button>
-        </form>
-        <p className="auth-switch">
-          Déjà inscrit ? <Link to="/login">Se connecter</Link>
-        </p>
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-8 sm:p-10">
+          <h2 className="text-2xl font-bold text-slate-900 mb-2">Inscription</h2>
+          <p className="page-subtitle mb-8">Créez un compte pour passer des commandes et suivre votre historique.</p>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="register-username">Identifiant</label>
+              <input
+                id="register-username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                minLength={2}
+                autoComplete="username"
+                placeholder="Choisissez un identifiant"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="register-email">Email</label>
+              <input
+                id="register-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder="votre@email.com"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="register-password">Mot de passe</label>
+              <input
+                id="register-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                autoComplete="new-password"
+                placeholder="Au moins 6 caractères"
+              />
+            </div>
+            {error && <div className="alert alert-error">{error}</div>}
+            <button type="submit" className="btn btn-primary btn-block py-3 text-base" disabled={loading}>
+              {loading ? <span className="loading-spinner" /> : null}
+              {loading ? ' Inscription...' : "S'inscrire"}
+            </button>
+          </form>
+          <p className="auth-switch">
+            Déjà inscrit ? <Link to="/login" className="text-primary font-semibold hover:underline">Se connecter</Link>
+          </p>
+        </div>
       </div>
-      <style>{`
-        .auth-card { max-width: 400px; margin: 0 auto; }
-        .auth-switch { margin-top: 1.25rem; font-size: 0.9rem; color: var(--color-text-muted); text-align: center; }
-      `}</style>
     </div>
   );
 }

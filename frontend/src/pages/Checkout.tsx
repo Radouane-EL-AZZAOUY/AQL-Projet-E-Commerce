@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cart as cartApi, orders } from '../api/client';
+import LoadingState from '../components/LoadingState';
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function Checkout() {
   if (loading) {
     return (
       <div className="container page">
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
       </div>
     );
   }
@@ -45,24 +46,26 @@ export default function Checkout() {
   return (
     <div className="container page">
       <h1 className="page-title">Valider la commande</h1>
-      <div className="card" style={{ maxWidth: 480 }}>
-        <p className="page-subtitle" style={{ marginBottom: '1.25rem' }}>
+      <div className="bg-white rounded-xl shadow-lg border border-slate-200 max-w-[480px] p-8">
+        <p className="page-subtitle mb-6">
           Votre panier sera converti en commande définitive. Une fois validée, la commande ne pourra plus être modifiée.
         </p>
         {error && <div className="alert alert-error">{error}</div>}
-        <div className="checkout-actions">
+        <div className="flex gap-4 flex-wrap">
           <button type="button" className="btn btn-secondary" onClick={() => navigate('/cart')}>
             Retour au panier
           </button>
-          <button type="button" className="btn btn-primary" onClick={handleConfirm} disabled={submitting}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleConfirm}
+            disabled={submitting}
+          >
             {submitting ? <span className="loading-spinner" /> : null}
             {submitting ? ' Validation...' : 'Confirmer la commande'}
           </button>
         </div>
       </div>
-      <style>{`
-        .checkout-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-      `}</style>
     </div>
   );
 }

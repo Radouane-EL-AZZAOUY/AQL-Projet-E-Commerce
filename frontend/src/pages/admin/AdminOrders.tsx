@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { admin, type Order } from '../../api/client';
+import LoadingState from '../../components/LoadingState';
+import EmptyState from '../../components/EmptyState';
 
 export default function AdminOrders() {
   const [list, setList] = useState<Order[]>([]);
@@ -33,7 +35,7 @@ export default function AdminOrders() {
   if (loading) {
     return (
       <div className="container page">
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
       </div>
     );
   }
@@ -45,10 +47,7 @@ export default function AdminOrders() {
       {success && <div className="alert alert-success">{success}</div>}
 
       {list.length === 0 ? (
-        <div className="card empty-state">
-          <div className="empty-state-icon">📦</div>
-          <p>Aucune commande.</p>
-        </div>
+        <EmptyState icon="📦" title="Aucune commande." />
       ) : (
         <div className="table-wrap">
           <table className="table">
@@ -76,14 +75,22 @@ export default function AdminOrders() {
                   </td>
                   <td>
                     {o.status === 'PENDING' && (
-                      <>
-                        <button type="button" className="btn btn-primary btn-sm" style={{ marginRight: '0.5rem' }} onClick={() => handleStatusChange(o.id, 'CONFIRMED')}>
+                      <span className="flex gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm"
+                          onClick={() => handleStatusChange(o.id, 'CONFIRMED')}
+                        >
                           Valider
                         </button>
-                        <button type="button" className="btn btn-danger btn-sm" onClick={() => handleStatusChange(o.id, 'CANCELLED')}>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleStatusChange(o.id, 'CANCELLED')}
+                        >
                           Annuler
                         </button>
-                      </>
+                      </span>
                     )}
                     {o.status === 'CONFIRMED' && <span className="badge badge-success">Validée</span>}
                     {o.status === 'CANCELLED' && <span className="badge badge-error">Annulée</span>}

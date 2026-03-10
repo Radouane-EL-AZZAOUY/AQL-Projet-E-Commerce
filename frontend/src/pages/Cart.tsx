@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { cart as cartApi, type Cart as CartType } from '../api/client';
+import LoadingState from '../components/LoadingState';
+import EmptyState from '../components/EmptyState';
 
 export default function Cart() {
   const [data, setData] = useState<CartType | null>(null);
@@ -39,7 +41,7 @@ export default function Cart() {
   if (loading) {
     return (
       <div className="container page">
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
       </div>
     );
   }
@@ -54,11 +56,9 @@ export default function Cart() {
     return (
       <div className="container page">
         <h1 className="page-title">Panier</h1>
-        <div className="card empty-state">
-          <div className="empty-state-icon">🛒</div>
-          <p>Votre panier est vide.</p>
-          <Link to="/catalog" className="btn btn-primary" style={{ marginTop: '1rem' }}>Voir le catalogue</Link>
-        </div>
+        <EmptyState icon="🛒" title="Votre panier est vide.">
+          <Link to="/catalog" className="btn btn-primary mt-4">Voir le catalogue</Link>
+        </EmptyState>
       </div>
     );
   }
@@ -66,7 +66,6 @@ export default function Cart() {
   return (
     <div className="container page">
       <h1 className="page-title">Panier</h1>
-      {error && <div className="alert alert-error">{error}</div>}
       <div className="card table-wrap">
         <table className="table">
           <thead>
@@ -89,12 +88,18 @@ export default function Cart() {
                     min={1}
                     value={item.quantity}
                     onChange={(e) => handleUpdate(item.productId, Math.max(1, Number(e.target.value) || 1))}
-                    className="cart-qty-input"
+                    className="input-qty"
+                    aria-label={`Quantité pour ${item.productName}`}
                   />
                 </td>
                 <td>{item.subtotal.toFixed(2)} €</td>
                 <td>
-                  <button type="button" className="btn btn-danger btn-sm" onClick={() => handleRemove(item.productId)}>
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleRemove(item.productId)}
+                    aria-label={`Supprimer ${item.productName} du panier`}
+                  >
                     Supprimer
                   </button>
                 </td>
@@ -107,11 +112,6 @@ export default function Cart() {
         <p className="cart-total">Total : <strong>{data.totalAmount.toFixed(2)} €</strong></p>
         <Link to="/checkout" className="btn btn-primary">Passer la commande</Link>
       </div>
-      <style>{`
-        .cart-qty-input { width: 64px; padding: 0.4rem 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); text-align: center; }
-        .cart-footer { margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .cart-total { font-size: 1.15rem; }
-      `}</style>
     </div>
   );
 }

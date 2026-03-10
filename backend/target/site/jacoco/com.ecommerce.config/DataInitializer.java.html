@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Component
-<span class="fc" id="L18">@RequiredArgsConstructor</span>
+@RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -61,115 +61,128 @@ public class DataInitializer implements CommandLineRunner {
 <span class="fc" id="L61">        productRepository.save(Product.builder()</span>
 <span class="fc" id="L62">                .name(&quot;Smartphone X Pro&quot;)</span>
 <span class="fc" id="L63">                .description(&quot;Smartphone dernière génération, écran 6.5\&quot;, 128 Go.&quot;)</span>
-<span class="fc" id="L64">                .price(new BigDecimal(&quot;599.99&quot;))</span>
-<span class="fc" id="L65">                .stock(50)</span>
-<span class="fc" id="L66">                .category(catElectro)</span>
-<span class="fc" id="L67">                .deleted(false)</span>
-<span class="fc" id="L68">                .build());</span>
-<span class="fc" id="L69">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L70">                .name(&quot;Écouteurs sans fil&quot;)</span>
-<span class="fc" id="L71">                .description(&quot;Écouteurs Bluetooth avec réduction de bruit.&quot;)</span>
-<span class="fc" id="L72">                .price(new BigDecimal(&quot;89.99&quot;))</span>
-<span class="fc" id="L73">                .stock(120)</span>
-<span class="fc" id="L74">                .category(catElectro)</span>
-<span class="fc" id="L75">                .deleted(false)</span>
-<span class="fc" id="L76">                .build());</span>
-<span class="fc" id="L77">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L78">                .name(&quot;Chargeur rapide 65W&quot;)</span>
-<span class="fc" id="L79">                .description(&quot;Chargeur USB-C compatible fast charging.&quot;)</span>
-<span class="fc" id="L80">                .price(new BigDecimal(&quot;34.99&quot;))</span>
-<span class="fc" id="L81">                .stock(200)</span>
-<span class="fc" id="L82">                .category(catElectro)</span>
-<span class="fc" id="L83">                .deleted(false)</span>
-<span class="fc" id="L84">                .build());</span>
-<span class="fc" id="L85">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L86">                .name(&quot;Clavier mécanique&quot;)</span>
-<span class="fc" id="L87">                .description(&quot;Clavier gaming RGB, switches bleus.&quot;)</span>
-<span class="fc" id="L88">                .price(new BigDecimal(&quot;129.00&quot;))</span>
-<span class="fc" id="L89">                .stock(45)</span>
-<span class="fc" id="L90">                .category(catElectro)</span>
-<span class="fc" id="L91">                .deleted(false)</span>
-<span class="fc" id="L92">                .build());</span>
+<span class="fc" id="L64">                .imageUrl(&quot;https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L65">                .price(new BigDecimal(&quot;599.99&quot;))</span>
+<span class="fc" id="L66">                .stock(50)</span>
+<span class="fc" id="L67">                .category(catElectro)</span>
+<span class="fc" id="L68">                .deleted(false)</span>
+<span class="fc" id="L69">                .build());</span>
+<span class="fc" id="L70">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L71">                .name(&quot;Écouteurs sans fil&quot;)</span>
+<span class="fc" id="L72">                .description(&quot;Écouteurs Bluetooth avec réduction de bruit.&quot;)</span>
+<span class="fc" id="L73">                .imageUrl(&quot;https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L74">                .price(new BigDecimal(&quot;89.99&quot;))</span>
+<span class="fc" id="L75">                .stock(120)</span>
+<span class="fc" id="L76">                .category(catElectro)</span>
+<span class="fc" id="L77">                .deleted(false)</span>
+<span class="fc" id="L78">                .build());</span>
+<span class="fc" id="L79">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L80">                .name(&quot;Chargeur rapide 65W&quot;)</span>
+<span class="fc" id="L81">                .description(&quot;Chargeur USB-C compatible fast charging.&quot;)</span>
+<span class="fc" id="L82">                .imageUrl(&quot;https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L83">                .price(new BigDecimal(&quot;34.99&quot;))</span>
+<span class="fc" id="L84">                .stock(200)</span>
+<span class="fc" id="L85">                .category(catElectro)</span>
+<span class="fc" id="L86">                .deleted(false)</span>
+<span class="fc" id="L87">                .build());</span>
+<span class="fc" id="L88">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L89">                .name(&quot;Clavier mécanique&quot;)</span>
+<span class="fc" id="L90">                .description(&quot;Clavier gaming RGB, switches bleus.&quot;)</span>
+<span class="fc" id="L91">                .imageUrl(&quot;https://images.unsplash.com/photo-1511467687858-23d96c32e4ae?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L92">                .price(new BigDecimal(&quot;129.00&quot;))</span>
+<span class="fc" id="L93">                .stock(45)</span>
+<span class="fc" id="L94">                .category(catElectro)</span>
+<span class="fc" id="L95">                .deleted(false)</span>
+<span class="fc" id="L96">                .build());</span>
 
         // Produits Vêtements
-<span class="fc" id="L95">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L96">                .name(&quot;T-shirt Basic&quot;)</span>
-<span class="fc" id="L97">                .description(&quot;T-shirt en coton bio, coupe unisexe.&quot;)</span>
-<span class="fc" id="L98">                .price(new BigDecimal(&quot;19.99&quot;))</span>
-<span class="fc" id="L99">                .stock(200)</span>
-<span class="fc" id="L100">                .category(catVetements)</span>
-<span class="fc" id="L101">                .deleted(false)</span>
-<span class="fc" id="L102">                .build());</span>
-<span class="fc" id="L103">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L104">                .name(&quot;Jean slim&quot;)</span>
-<span class="fc" id="L105">                .description(&quot;Jean coupe slim, matière stretch.&quot;)</span>
-<span class="fc" id="L106">                .price(new BigDecimal(&quot;49.99&quot;))</span>
-<span class="fc" id="L107">                .stock(80)</span>
-<span class="fc" id="L108">                .category(catVetements)</span>
-<span class="fc" id="L109">                .deleted(false)</span>
-<span class="fc" id="L110">                .build());</span>
-<span class="fc" id="L111">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L112">                .name(&quot;Pull en laine&quot;)</span>
-<span class="fc" id="L113">                .description(&quot;Pull col rond, laine mérinos.&quot;)</span>
-<span class="fc" id="L114">                .price(new BigDecimal(&quot;79.99&quot;))</span>
-<span class="fc" id="L115">                .stock(35)</span>
-<span class="fc" id="L116">                .category(catVetements)</span>
-<span class="fc" id="L117">                .deleted(false)</span>
-<span class="fc" id="L118">                .build());</span>
+<span class="fc" id="L99">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L100">                .name(&quot;T-shirt Basic&quot;)</span>
+<span class="fc" id="L101">                .description(&quot;T-shirt en coton bio, coupe unisexe.&quot;)</span>
+<span class="fc" id="L102">                .imageUrl(&quot;https://images.unsplash.com/photo-1521572163471-6310d28735a3?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L103">                .price(new BigDecimal(&quot;19.99&quot;))</span>
+<span class="fc" id="L104">                .stock(200)</span>
+<span class="fc" id="L105">                .category(catVetements)</span>
+<span class="fc" id="L106">                .deleted(false)</span>
+<span class="fc" id="L107">                .build());</span>
+<span class="fc" id="L108">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L109">                .name(&quot;Jean slim&quot;)</span>
+<span class="fc" id="L110">                .description(&quot;Jean coupe slim, matière stretch.&quot;)</span>
+<span class="fc" id="L111">                .imageUrl(&quot;https://images.unsplash.com/photo-1542272604-46c216ddb796?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L112">                .price(new BigDecimal(&quot;49.99&quot;))</span>
+<span class="fc" id="L113">                .stock(80)</span>
+<span class="fc" id="L114">                .category(catVetements)</span>
+<span class="fc" id="L115">                .deleted(false)</span>
+<span class="fc" id="L116">                .build());</span>
+<span class="fc" id="L117">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L118">                .name(&quot;Pull en laine&quot;)</span>
+<span class="fc" id="L119">                .description(&quot;Pull col rond, laine mérinos.&quot;)</span>
+<span class="fc" id="L120">                .imageUrl(&quot;https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L121">                .price(new BigDecimal(&quot;79.99&quot;))</span>
+<span class="fc" id="L122">                .stock(35)</span>
+<span class="fc" id="L123">                .category(catVetements)</span>
+<span class="fc" id="L124">                .deleted(false)</span>
+<span class="fc" id="L125">                .build());</span>
 
         // Produits Maison
-<span class="fc" id="L121">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L122">                .name(&quot;Cafetière programmable&quot;)</span>
-<span class="fc" id="L123">                .description(&quot;Cafetière 12 tasses, minuterie et maintien au chaud.&quot;)</span>
-<span class="fc" id="L124">                .price(new BigDecimal(&quot;59.99&quot;))</span>
-<span class="fc" id="L125">                .stock(60)</span>
-<span class="fc" id="L126">                .category(catMaison)</span>
-<span class="fc" id="L127">                .deleted(false)</span>
-<span class="fc" id="L128">                .build());</span>
-<span class="fc" id="L129">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L130">                .name(&quot;Set de couverts 24 pièces&quot;)</span>
-<span class="fc" id="L131">                .description(&quot;Inox 18/10, lave-vaisselle.&quot;)</span>
-<span class="fc" id="L132">                .price(new BigDecimal(&quot;44.99&quot;))</span>
-<span class="fc" id="L133">                .stock(40)</span>
+<span class="fc" id="L128">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L129">                .name(&quot;Cafetière programmable&quot;)</span>
+<span class="fc" id="L130">                .description(&quot;Cafetière 12 tasses, minuterie et maintien au chaud.&quot;)</span>
+<span class="fc" id="L131">                .imageUrl(&quot;https://images.unsplash.com/photo-1517668808823-9e3e7f4c21e8?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L132">                .price(new BigDecimal(&quot;59.99&quot;))</span>
+<span class="fc" id="L133">                .stock(60)</span>
 <span class="fc" id="L134">                .category(catMaison)</span>
 <span class="fc" id="L135">                .deleted(false)</span>
 <span class="fc" id="L136">                .build());</span>
+<span class="fc" id="L137">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L138">                .name(&quot;Set de couverts 24 pièces&quot;)</span>
+<span class="fc" id="L139">                .description(&quot;Inox 18/10, lave-vaisselle.&quot;)</span>
+<span class="fc" id="L140">                .imageUrl(&quot;https://images.unsplash.com/photo-1556909114-f6e2f3960f77?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L141">                .price(new BigDecimal(&quot;44.99&quot;))</span>
+<span class="fc" id="L142">                .stock(40)</span>
+<span class="fc" id="L143">                .category(catMaison)</span>
+<span class="fc" id="L144">                .deleted(false)</span>
+<span class="fc" id="L145">                .build());</span>
 
         // Produits Sport
-<span class="fc" id="L139">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L140">                .name(&quot;Ballon de football&quot;)</span>
-<span class="fc" id="L141">                .description(&quot;Taille 5, cuir synthétique.&quot;)</span>
-<span class="fc" id="L142">                .price(new BigDecimal(&quot;24.99&quot;))</span>
-<span class="fc" id="L143">                .stock(90)</span>
-<span class="fc" id="L144">                .category(catSport)</span>
-<span class="fc" id="L145">                .deleted(false)</span>
-<span class="fc" id="L146">                .build());</span>
-<span class="fc" id="L147">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L148">                .name(&quot;Tapis de yoga&quot;)</span>
-<span class="fc" id="L149">                .description(&quot;Tapis antidérapant 6 mm, 183 x 61 cm.&quot;)</span>
-<span class="fc" id="L150">                .price(new BigDecimal(&quot;29.99&quot;))</span>
-<span class="fc" id="L151">                .stock(70)</span>
-<span class="fc" id="L152">                .category(catSport)</span>
-<span class="fc" id="L153">                .deleted(false)</span>
-<span class="fc" id="L154">                .build());</span>
+<span class="fc" id="L148">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L149">                .name(&quot;Ballon de football&quot;)</span>
+<span class="fc" id="L150">                .description(&quot;Taille 5, cuir synthétique.&quot;)</span>
+<span class="fc" id="L151">                .imageUrl(&quot;https://images.unsplash.com/photo-1614632537197-38a17061c2bd?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L152">                .price(new BigDecimal(&quot;24.99&quot;))</span>
+<span class="fc" id="L153">                .stock(90)</span>
+<span class="fc" id="L154">                .category(catSport)</span>
+<span class="fc" id="L155">                .deleted(false)</span>
+<span class="fc" id="L156">                .build());</span>
+<span class="fc" id="L157">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L158">                .name(&quot;Tapis de yoga&quot;)</span>
+<span class="fc" id="L159">                .description(&quot;Tapis antidérapant 6 mm, 183 x 61 cm.&quot;)</span>
+<span class="fc" id="L160">                .imageUrl(&quot;https://images.unsplash.com/photo-1601925260368-ae2f83cf8b3f?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L161">                .price(new BigDecimal(&quot;29.99&quot;))</span>
+<span class="fc" id="L162">                .stock(70)</span>
+<span class="fc" id="L163">                .category(catSport)</span>
+<span class="fc" id="L164">                .deleted(false)</span>
+<span class="fc" id="L165">                .build());</span>
 
         // Produits Livres
-<span class="fc" id="L157">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L158">                .name(&quot;Guide du développement web&quot;)</span>
-<span class="fc" id="L159">                .description(&quot;Ouvrage de référence HTML, CSS, JavaScript.&quot;)</span>
-<span class="fc" id="L160">                .price(new BigDecimal(&quot;35.00&quot;))</span>
-<span class="fc" id="L161">                .stock(25)</span>
-<span class="fc" id="L162">                .category(catLivres)</span>
-<span class="fc" id="L163">                .deleted(false)</span>
-<span class="fc" id="L164">                .build());</span>
-<span class="fc" id="L165">        productRepository.save(Product.builder()</span>
-<span class="fc" id="L166">                .name(&quot;Roman best-seller&quot;)</span>
-<span class="fc" id="L167">                .description(&quot;Édition brochée, 400 pages.&quot;)</span>
-<span class="fc" id="L168">                .price(new BigDecimal(&quot;14.99&quot;))</span>
-<span class="fc" id="L169">                .stock(150)</span>
-<span class="fc" id="L170">                .category(catLivres)</span>
-<span class="fc" id="L171">                .deleted(false)</span>
-<span class="fc" id="L172">                .build());</span>
-<span class="fc" id="L173">    }</span>
+<span class="fc" id="L168">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L169">                .name(&quot;Guide du développement web&quot;)</span>
+<span class="fc" id="L170">                .description(&quot;Ouvrage de référence HTML, CSS, JavaScript.&quot;)</span>
+<span class="fc" id="L171">                .imageUrl(&quot;https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L172">                .price(new BigDecimal(&quot;35.00&quot;))</span>
+<span class="fc" id="L173">                .stock(25)</span>
+<span class="fc" id="L174">                .category(catLivres)</span>
+<span class="fc" id="L175">                .deleted(false)</span>
+<span class="fc" id="L176">                .build());</span>
+<span class="fc" id="L177">        productRepository.save(Product.builder()</span>
+<span class="fc" id="L178">                .name(&quot;Roman best-seller&quot;)</span>
+<span class="fc" id="L179">                .description(&quot;Édition brochée, 400 pages.&quot;)</span>
+<span class="fc" id="L180">                .imageUrl(&quot;https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&amp;q=80&quot;)</span>
+<span class="fc" id="L181">                .price(new BigDecimal(&quot;14.99&quot;))</span>
+<span class="fc" id="L182">                .stock(150)</span>
+<span class="fc" id="L183">                .category(catLivres)</span>
+<span class="fc" id="L184">                .deleted(false)</span>
+<span class="fc" id="L185">                .build());</span>
+<span class="fc" id="L186">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

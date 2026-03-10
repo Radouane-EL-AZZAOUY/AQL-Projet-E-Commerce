@@ -23,6 +23,8 @@ public class ProductDto {
 
     private String description;
 
+    private String imageUrl;
+
     @NotNull
     @DecimalMin("0")
     private BigDecimal price;

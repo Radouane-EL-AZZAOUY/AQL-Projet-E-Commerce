@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { admin, type Category } from '../../api/client';
 import Modal from '../../components/Modal';
+import LoadingState from '../../components/LoadingState';
+import EmptyState from '../../components/EmptyState';
 
 export default function AdminCategories() {
   const [list, setList] = useState<Category[]>([]);
@@ -91,14 +93,16 @@ export default function AdminCategories() {
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+      <div className="flex justify-end mb-4">
         <button type="button" className="btn btn-primary" onClick={openCreateModal}>
           Nouvelle catégorie
         </button>
       </div>
 
       {loading ? (
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
+      ) : list.length === 0 ? (
+        <EmptyState title="Aucune catégorie. Ajoutez-en une ci-dessus." />
       ) : (
         <div className="table-wrap">
           <table className="table">
@@ -114,12 +118,13 @@ export default function AdminCategories() {
                 <tr key={c.id}>
                   <td>{c.id}</td>
                   <td>
-                    <span
+                    <button
+                      type="button"
                       onClick={() => startEdit(c)}
-                      style={{ cursor: 'pointer', fontWeight: 500 }}
+                      className="cursor-pointer font-medium text-left hover:text-primary transition-colors"
                     >
                       {c.name}
-                    </span>
+                    </button>
                   </td>
                   <td>
                     <button
@@ -136,19 +141,15 @@ export default function AdminCategories() {
           </table>
         </div>
       )}
-      {list.length === 0 && !loading && (
-        <div className="empty-state">
-          <p>Aucune catégorie. Ajoutez-en une ci-dessus.</p>
-        </div>
-      )}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         title={isEditModal ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
       >
-        <div className="form-group" style={{ marginBottom: '1rem' }}>
-          <label>Nom</label>
+        <div className="form-group mb-4">
+          <label htmlFor="category-name">Nom</label>
           <input
+            id="category-name"
             value={isEditModal ? editName : newName}
             onChange={(e) =>
               isEditModal ? setEditName(e.target.value) : setNewName(e.target.value)
@@ -156,7 +157,7 @@ export default function AdminCategories() {
             placeholder="Nom de la catégorie"
           />
         </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+        <div className="flex justify-end gap-2">
           <button type="button" className="btn btn-secondary" onClick={closeModal}>
             Annuler
           </button>

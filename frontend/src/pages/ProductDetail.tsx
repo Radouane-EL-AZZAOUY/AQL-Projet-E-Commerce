@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { products, cart } from '../api/client';
+import BackLink from '../components/BackLink';
+import LoadingState from '../components/LoadingState';
+import EmptyState from '../components/EmptyState';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -38,17 +41,16 @@ export default function ProductDetail() {
   if (loading) {
     return (
       <div className="container page">
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
       </div>
     );
   }
   if (!product) {
     return (
       <div className="container page">
-        <div className="card">
-          <p>Produit introuvable.</p>
-          <Link to="/catalog" className="btn btn-secondary" style={{ marginTop: '1rem' }}>Retour au catalogue</Link>
-        </div>
+        <EmptyState title="Produit introuvable.">
+          <Link to="/catalog" className="btn btn-secondary mt-4">Retour au catalogue</Link>
+        </EmptyState>
       </div>
     );
   }
@@ -57,48 +59,72 @@ export default function ProductDetail() {
 
   return (
     <div className="container page">
-      <Link to="/catalog" className="back-link">← Retour au catalogue</Link>
-      <div className="product-detail card">
-        <div className="product-detail-main">
-          <span className="product-category">{product.categoryName || '—'}</span>
-          <h1 className="product-detail-title">{product.name}</h1>
-          <p className="product-detail-price">{product.price.toFixed(2)} €</p>
-          {product.description && <p className="product-detail-desc">{product.description}</p>}
-          <p className="product-detail-stock">En stock : {product.stock} unité(s)</p>
-          {token && product.stock > 0 && (
-            <div className="product-detail-actions">
-              <div className="form-group" style={{ marginBottom: '0.75rem', maxWidth: 100 }}>
-                <label>Quantité</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={maxQty}
-                  value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, Math.min(maxQty, Number(e.target.value) || 1)))}
-                />
+      <BackLink to="/catalog">Retour au catalogue</BackLink>
+
+      <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+        <div className="grid lg:grid-cols-2 gap-0">
+          {/* Product image */}
+          <div className="bg-slate-100 flex items-center justify-center min-h-[280px] lg:min-h-[400px] aspect-square lg:aspect-auto overflow-hidden">
+            {product.imageUrl ? (
+              <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="text-center p-8">
+                <svg className="w-24 h-24 mx-auto text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="text-sm text-slate-500 font-medium">Image produit</p>
               </div>
-              <button type="button" className="btn btn-primary" onClick={handleAddToCart}>
-                Ajouter au panier
-              </button>
-              {message && <p className={message.startsWith('Produit') ? 'alert alert-success' : 'alert alert-error'} style={{ marginTop: '0.5rem', marginBottom: 0 }}>{message}</p>}
-            </div>
-          )}
-          {!token && <p className="product-detail-login">Connectez-vous pour ajouter ce produit au panier.</p>}
+            )}
+          </div>
+
+          {/* Product info */}
+          <div className="p-6 sm:p-8 lg:p-10 flex flex-col">
+            <span className="inline-block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+              {product.categoryName || '—'}
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">{product.name}</h1>
+            <p className="text-2xl font-bold text-primary mb-6">{product.price.toFixed(2)} €</p>
+
+            {product.description && (
+              <p className="text-slate-600 leading-relaxed mb-4">{product.description}</p>
+            )}
+            <p className="text-sm text-slate-500 mb-6">
+              En stock : <span className="font-semibold text-slate-700">{product.stock}</span> unité(s)
+            </p>
+
+            {token && product.stock > 0 && (
+              <div className="mt-auto pt-6 border-t border-slate-200">
+                <div className="flex flex-wrap items-end gap-4">
+                  <div className="form-group mb-0 flex-1 min-w-[100px] max-w-[120px]">
+                    <label htmlFor="product-qty">Quantité</label>
+                    <input
+                      id="product-qty"
+                      type="number"
+                      min={1}
+                      max={maxQty}
+                      value={quantity}
+                      onChange={(e) => setQuantity(Math.max(1, Math.min(maxQty, Number(e.target.value) || 1)))}
+                    />
+                  </div>
+                  <button type="button" className="btn btn-primary" onClick={handleAddToCart}>
+                    Ajouter au panier
+                  </button>
+                </div>
+                {message && (
+                  <p className={`mt-4 mb-0 ${message.startsWith('Produit') ? 'alert alert-success' : 'alert alert-error'}`}>
+                    {message}
+                  </p>
+                )}
+              </div>
+            )}
+            {!token && (
+              <p className="text-slate-500 text-sm mt-6">
+                Connectez-vous pour ajouter ce produit au panier.
+              </p>
+            )}
+          </div>
         </div>
       </div>
-      <style>{`
-        .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.9rem; color: var(--color-text-muted); }
-        .back-link:hover { color: var(--color-primary); }
-        .product-detail { max-width: 560px; padding: 1.75rem; }
-        .product-detail-main { }
-        .product-category { font-size: 0.8rem; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-        .product-detail-title { font-size: 1.5rem; font-weight: 700; margin: 0.35rem 0 0.5rem; }
-        .product-detail-price { font-size: 1.5rem; font-weight: 700; color: var(--color-primary); margin-bottom: 1rem; }
-        .product-detail-desc { color: var(--color-text-muted); margin-bottom: 1rem; line-height: 1.5; }
-        .product-detail-stock { font-size: 0.9rem; margin-bottom: 1rem; }
-        .product-detail-actions { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; }
-        .product-detail-login { color: var(--color-text-muted); font-size: 0.9rem; }
-      `}</style>
     </div>
   );
 }

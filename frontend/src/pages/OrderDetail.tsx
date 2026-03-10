@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { orders as ordersApi, type Order } from '../api/client';
+import BackLink from '../components/BackLink';
+import LoadingState from '../components/LoadingState';
 
 export default function OrderDetail() {
   const { id } = useParams<{ id: string }>();
@@ -27,7 +29,7 @@ export default function OrderDetail() {
   if (loading && !error) {
     return (
       <div className="container page">
-        <div className="empty-state"><span className="loading-spinner" style={{ display: 'block', margin: '2rem auto' }} /></div>
+        <LoadingState />
       </div>
     );
   }
@@ -36,7 +38,7 @@ export default function OrderDetail() {
       <div className="container page">
         <div className="card">
           <div className="alert alert-error">{error || 'Commande introuvable'}</div>
-          <Link to="/orders" className="btn btn-secondary">Mes commandes</Link>
+          <BackLink to="/orders">← Retour aux commandes</BackLink>
         </div>
       </div>
     );
@@ -44,14 +46,17 @@ export default function OrderDetail() {
 
   return (
     <div className="container page">
-      <Link to="/orders" className="back-link">← Mes commandes</Link>
+      <BackLink to="/orders">← Mes commandes</BackLink>
       <div className="card">
         <h1 className="page-title">Commande #{order.id}</h1>
         <div className="order-meta">
           <p>Date : {new Date(order.createdAt).toLocaleString('fr-FR')}</p>
-          <p>Statut : <span className={`badge badge-${order.status === 'CONFIRMED' ? 'success' : order.status === 'CANCELLED' ? 'error' : 'neutral'}`}>
-            {order.status === 'CONFIRMED' ? 'Validée' : order.status === 'CANCELLED' ? 'Annulée' : 'En attente'}
-          </span></p>
+          <p>
+            Statut :{' '}
+            <span className={`badge badge-${order.status === 'CONFIRMED' ? 'success' : order.status === 'CANCELLED' ? 'error' : 'neutral'}`}>
+              {order.status === 'CONFIRMED' ? 'Validée' : order.status === 'CANCELLED' ? 'Annulée' : 'En attente'}
+            </span>
+          </p>
           <p className="order-total">Total : <strong>{order.totalAmount.toFixed(2)} €</strong></p>
         </div>
         <h3 className="card-header">Détail des articles</h3>
@@ -78,13 +83,6 @@ export default function OrderDetail() {
           </table>
         </div>
       </div>
-      <style>{`
-        .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.9rem; color: var(--color-text-muted); }
-        .back-link:hover { color: var(--color-primary); }
-        .order-meta { margin-bottom: 1.5rem; }
-        .order-meta p { margin-bottom: 0.35rem; }
-        .order-total { font-size: 1.1rem; margin-top: 0.5rem; }
-      `}</style>
     </div>
   );
 }
