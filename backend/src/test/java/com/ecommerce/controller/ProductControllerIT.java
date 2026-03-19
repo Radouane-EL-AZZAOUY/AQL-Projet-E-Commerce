@@ -20,7 +20,7 @@ class ProductControllerIT {
 
     @Test
     void listProducts_ReturnsPaginatedResponse() throws Exception {
-        mockMvc.perform(get("/api/products").param("page", "0").param("size", "10"))
+        mockMvc.perform(get("/products").param("page", "0").param("size", "10"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.page").value(0))
@@ -29,7 +29,7 @@ class ProductControllerIT {
 
     @Test
     void getProductById_WhenExists_ReturnsProduct() throws Exception {
-        mockMvc.perform(get("/api/products/1"))
+        mockMvc.perform(get("/products/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").exists())
@@ -39,7 +39,7 @@ class ProductControllerIT {
 
     @Test
     void getProductById_WhenNotExists_Returns404() throws Exception {
-        mockMvc.perform(get("/api/products/99999"))
+        mockMvc.perform(get("/products/99999"))
                 .andExpect(status().isBadRequest());
     }
 }

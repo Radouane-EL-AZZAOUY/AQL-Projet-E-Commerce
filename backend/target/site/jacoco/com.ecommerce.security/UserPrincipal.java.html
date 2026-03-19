@@ -11,13 +11,13 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Getter
-@AllArgsConstructor
+<span class="fc" id="L14">@AllArgsConstructor</span>
 public class UserPrincipal implements UserDetails {
 
-    private final Long id;
-    private final String username;
-    private final String password;
-    private final Collection&lt;? extends GrantedAuthority&gt; authorities;
+<span class="fc" id="L17">    private final Long id;</span>
+<span class="fc" id="L18">    private final String username;</span>
+<span class="nc" id="L19">    private final String password;</span>
+<span class="fc" id="L20">    private final Collection&lt;? extends GrantedAuthority&gt; authorities;</span>
 
     public static UserPrincipal create(User user) {
 <span class="fc" id="L23">        return new UserPrincipal(</span>

@@ -29,7 +29,7 @@ class AuthControllerIT {
     @Test
     void register_ReturnsTokenAndUser() throws Exception {
         RegisterRequest request = new RegisterRequest("ituser", "ituser@test.com", "password123");
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -41,11 +41,11 @@ class AuthControllerIT {
     @Test
     void register_DuplicateUsername_ReturnsBadRequest() throws Exception {
         RegisterRequest request = new RegisterRequest("ituser2", "ituser2@test.com", "password123");
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
-        mockMvc.perform(post("/api/auth/register")
+        mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -54,7 +54,7 @@ class AuthControllerIT {
     @Test
     void login_WithAdmin_ReturnsToken() throws Exception {
         String body = "{\"username\":\"admin\",\"password\":\"admin123\"}";
-        mockMvc.perform(post("/api/auth/login")
+        mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
