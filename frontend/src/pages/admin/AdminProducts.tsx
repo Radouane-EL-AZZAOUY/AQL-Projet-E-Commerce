@@ -1,70 +1,68 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { admin, type Product, type Category } from '../../api/client';
+import AlertMessage from '../../components/AlertMessage';
 import Modal from '../../components/Modal';
 import LoadingState from '../../components/LoadingState';
+import PageContainer from '../../components/PageContainer';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
+import { useAsyncData } from '../../hooks/useAsyncData';
 
 export default function AdminProducts() {
-  const [data, setData] = useState<{ content: Product[]; totalPages: number } | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesFallback] = useState<Category[]>([]);
   const [page, setPage] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState({ name: '', description: '', price: 0, stock: 0, categoryId: '' as number | '', imageUrl: '' });
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const loadProducts = () => {
-    setLoading(true);
-    admin.products
-      .list(page, 20)
-      .then((res) => setData({ content: res.content, totalPages: res.totalPages }))
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erreur'))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    admin.categories.list().then(setCategories).catch(() => setCategories([]));
-  }, []);
-
-  useEffect(() => loadProducts(), [page]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { data: categories } = useAsyncData<Category[]>(
+    categoriesFallback,
+    () => admin.categories.list(),
+    [],
+    () => ''
+  );
+  const { data: listData, loading, error: loadError } = useAsyncData<{ content: Product[]; totalPages: number } | null>(
+    null,
+    async () => {
+      const res = await admin.products.list(page, 20);
+      return { content: res.content, totalPages: res.totalPages };
+    },
+    [page, refreshKey]
+  );
+  const data = listData;
+  const { error: actionError, run, setError: setActionError } = useAsyncAction();
 
   const handleSave = async () => {
-    if (!form.name.trim()) { setError('Le nom est requis'); return; }
-    setError('');
+    if (!form.name.trim()) { setActionError('Le nom est requis'); return; }
+    setActionError('');
     setSuccess('');
-    try {
-      const payload = {
-        name: form.name.trim(),
-        description: form.description.trim() || undefined,
-        imageUrl: form.imageUrl.trim() || undefined,
-        price: Number(form.price),
-        stock: Number(form.stock) || 0,
-        categoryId: form.categoryId === '' ? undefined : form.categoryId,
-      };
-      if (editing) {
-        await admin.products.update(editing.id, payload);
-        setSuccess('Produit mis à jour.');
-      } else {
-        await admin.products.create(payload);
-        setSuccess('Produit créé.');
-      }
+    const payload = {
+      name: form.name.trim(),
+      description: form.description.trim() || undefined,
+      imageUrl: form.imageUrl.trim() || undefined,
+      price: Number(form.price),
+      stock: Number(form.stock) || 0,
+      categoryId: form.categoryId === '' ? undefined : form.categoryId,
+    };
+    const saved = await run(() => (
+      editing
+        ? admin.products.update(editing.id, payload)
+        : admin.products.create(payload)
+    ));
+    if (saved) {
+      setSuccess(editing ? 'Produit mis à jour.' : 'Produit créé.');
       handleCloseModal();
-      loadProducts();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setRefreshKey((k) => k + 1);
     }
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm('Supprimer ce produit ? Il ne sera plus visible dans le catalogue.')) return;
-    setError('');
-    try {
-      await admin.products.delete(id);
+    setActionError('');
+    const deleted = await run(() => admin.products.delete(id));
+    if (deleted !== undefined) {
       setSuccess('Produit supprimé.');
-      loadProducts();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setRefreshKey((k) => k + 1);
     }
   };
 
@@ -86,11 +84,13 @@ export default function AdminProducts() {
     setIsModalOpen(false);
   };
 
+  const error = loadError || actionError;
+
   return (
-    <div className="container page">
+    <PageContainer>
       <h1 className="page-title">Admin — Produits</h1>
-      {error && <div className="alert alert-error">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
+      {error && <AlertMessage kind="error" message={error} />}
+      {success && <AlertMessage kind="success" message={success} />}
 
       <div className="flex justify-end mb-4">
         <button type="button" className="btn btn-primary" onClick={handleCreate}>
@@ -235,6 +235,6 @@ export default function AdminProducts() {
           </button>
         </div>
       </Modal>
-    </div>
+    </PageContainer>
   );
 }

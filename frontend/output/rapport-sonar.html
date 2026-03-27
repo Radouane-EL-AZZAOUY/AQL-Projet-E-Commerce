@@ -1,0 +1,494 @@
+
+  <!DOCTYPE html>
+  <html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport SonarQube Détaillé - ecommerce-frontend</title>
+    <style>
+      :root {
+        --primary: #0078d7;
+        --success: #4caf50;
+        --warning: #ff9800;
+        --danger: #f44336;
+        --light: #f9f9f9;
+        --dark: #333;
+        --border: #ddd;
+      }
+      body { 
+        font-family: 'Segoe UI', Arial, sans-serif; 
+        line-height: 1.6;
+        color: var(--dark);
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+      header {
+        background-color: var(--primary);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      h1 { 
+        margin: 0;
+        font-size: 2em;
+      }
+      h2 {
+        color: var(--primary);
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 10px;
+        margin-top: 40px;
+      }
+      h3 {
+        color: var(--dark);
+        margin-top: 25px;
+      }
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+      }
+      .metric-card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+      }
+      .metric-card:hover {
+        transform: translateY(-5px);
+      }
+      .metric-header {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: var(--primary);
+      }
+      .metric-value {
+        font-size: 2em;
+        font-weight: bold;
+        margin: 15px 0;
+      }
+      .metric-detail {
+        color: #666;
+        font-size: 0.9em;
+      }
+      .excellent { color: var(--success); }
+      .good { color: #2196F3; }
+      .warning { color: var(--warning); }
+      .critical { color: var(--danger); }
+      .na { color: #9e9e9e; }
+      
+      table { 
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      th, td { 
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+      th { 
+        background-color: var(--primary);
+        color: white;
+        font-weight: 600;
+      }
+      tr:nth-child(even) { background-color: var(--light); }
+      tr:hover { background-color: rgba(0,120,215,0.05); }
+      
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+      }
+      .chart-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        height: 350px;
+      }
+      
+      .top-files {
+        margin-top: 30px;
+      }
+      .file-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 15px;
+        border-bottom: 1px solid var(--border);
+      }
+      .file-item:last-child {
+        border-bottom: none;
+      }
+      .file-name {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .file-issues {
+        padding-left: 20px;
+        font-weight: bold;
+      }
+      
+      footer {
+        margin-top: 50px;
+        padding: 20px;
+        text-align: center;
+        color: #777;
+        font-size: 0.9em;
+        border-top: 1px solid var(--border);
+      }
+      
+      @media print {
+        body {
+          background-color: white;
+        }
+        .container {
+          box-shadow: none;
+          max-width: 100%;
+        }
+        .chart-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      
+<!-- PAGE DE GARDE -->
+<div style="page-break-after: always; text-align: center; padding-top: 100px;">
+  <img src="logo-placeholder.png" alt="Logo Projet" style="max-height: 100px; margin-bottom: 30px;" />
+  <h1 style="font-size: 3em; color: #0078d7;">Rapport de Qualité Logicielle</h1>
+  <h2 style="color: #333;">Projet : ecommerce-frontend</h2>
+  <p style="margin-top: 50px; font-size: 1.2em;">Généré automatiquement via SonarQube</p>
+  <p style="font-size: 1em; color: #777;">Date : 3/27/2026</p>
+</div>
+
+<!-- TABLE DES MATIÈRES -->
+<h2>Table des matières</h2>
+<ol>
+  <li><a href="#presentation">1. Présentation du Projet</a></li>
+  <li><a href="#resume">2. Résumé de la qualité du code</a></li>
+  <li><a href="#metriques">3. Métriques détaillées</a></li>
+  <li><a href="#visualisation">4. Visualisation des données</a></li>
+  <li><a href="#fichiers">5. Fichiers problématiques</a></li>
+  <li><a href="#repartition">6. Répartition des problèmes</a></li>
+  <li><a href="#conclusion">7. Conclusion</a></li>
+</ol>
+
+<!-- SECTION PRÉSENTATION -->
+<h2 id="presentation">1. Présentation du Projet</h2>
+<p>
+  Le projet <strong>ecommerce-frontend</strong> correspond au <strong>frontend</strong> de l’application e-commerce
+  (React, TypeScript, Vite). Ce rapport analyse la qualité du code à partir des indicateurs mesurés par SonarQube.
+</p>
+
+<header>
+        <h1>Rapport de Qualité - ecommerce-frontend</h1>
+        <p>Analyse de qualité du code générée le 3/27/2026, 6:42:50 PM</p>
+      </header>
+      
+      <h2>Résumé de la qualité du code</h2>
+      <div class="summary-grid">
+        <div class="metric-card">
+          <div class="metric-header">Fiabilité</div>
+          <div class="metric-value good">1</div>
+          <div class="metric-detail">Bugs détectés</div>
+          <div class="metric-detail">Rating: Non évalué</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">Sécurité</div>
+          <div class="metric-value good">1</div>
+          <div class="metric-detail">Vulnérabilités</div>
+          <div class="metric-detail">1 points sensibles identifiés</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">Maintenabilité</div>
+          <div class="metric-value excellent">30</div>
+          <div class="metric-detail">Code smells</div>
+          <div class="metric-detail">Dette technique: 2h 22m</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">Couverture</div>
+          <div class="metric-value warning">53.8%</div>
+          <div class="metric-detail">890 lignes à couvrir</div>
+          <div class="metric-detail">445 lignes non couvertes</div>
+        </div>
+      </div>
+      
+      <h2>Métriques détaillées</h2>
+      <table>
+        <tr>
+          <th>Métrique</th>
+          <th>Valeur</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>Taille du code</td>
+          <td>3205</td>
+          <td>Nombre de lignes de code (hors commentaires et espaces)</td>
+        </tr>
+        <tr>
+          <td>Commentaires</td>
+          <td>0.8%</td>
+          <td>Densité de commentaires dans le code</td>
+        </tr>
+        <tr>
+          <td>Complexité</td>
+          <td>465</td>
+          <td>Complexité cyclomatique totale du code</td>
+        </tr>
+        <tr>
+          <td>Duplication</td>
+          <td>0.0%</td>
+          <td>0 blocs dupliqués identifiés</td>
+        </tr>
+        <tr>
+          <td>Tests</td>
+          <td>0</td>
+          <td>Taux de succès: 0%</td>
+        </tr>
+      </table>
+      
+      <h2>Visualisation des données</h2>
+      <div class="chart-grid">
+        <div class="chart-container">
+          <canvas id="metricsChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="issuesChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <canvas id="coverageChart"></canvas>
+        </div>
+      </div>
+      
+      <h2>Top 10 des fichiers problématiques</h2>
+      <div class="top-files">
+        
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/admin/AdminProducts.tsx.html</div>
+              <div class="file-issues critical">483 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/admin/AdminCategories.tsx.html</div>
+              <div class="file-issues critical">365 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/api/client.ts.html</div>
+              <div class="file-issues critical">341 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/ProductDetail.tsx.html</div>
+              <div class="file-issues critical">257 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/Catalog.tsx.html</div>
+              <div class="file-issues critical">243 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/Cart.tsx.html</div>
+              <div class="file-issues critical">237 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/admin/AdminOrders.tsx.html</div>
+              <div class="file-issues critical">215 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/components/Layout.tsx.html</div>
+              <div class="file-issues critical">179 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/OrderDetail.tsx.html</div>
+              <div class="file-issues critical">179 problèmes</div>
+            </div>
+          
+            <div class="file-item">
+              <div class="file-name">coverage/src/pages/Register.tsx.html</div>
+              <div class="file-issues critical">175 problèmes</div>
+            </div>
+          
+      </div>
+      
+      <h2>Répartition des problèmes</h2>
+      <div class="summary-grid">
+        <div class="metric-card">
+          <div class="metric-header">Par type</div>
+          <table>
+            <tr>
+              <th>Type</th>
+              <th>Nombre</th>
+            </tr>
+            
+                <tr>
+                  <td>CODE_SMELL</td>
+                  <td>3907</td>
+                </tr>
+              
+                <tr>
+                  <td>BUG</td>
+                  <td>25</td>
+                </tr>
+              
+                <tr>
+                  <td>VULNERABILITY</td>
+                  <td>1</td>
+                </tr>
+              
+          </table>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">Par sévérité</div>
+          <table>
+            <tr>
+              <th>Sévérité</th>
+              <th>Nombre</th>
+            </tr>
+            
+                <tr>
+                  <td>MINOR</td>
+                  <td>1954</td>
+                </tr>
+              
+                <tr>
+                  <td>MAJOR</td>
+                  <td>1978</td>
+                </tr>
+              
+                <tr>
+                  <td>BLOCKER</td>
+                  <td>1</td>
+                </tr>
+              
+          </table>
+        </div>
+      </div>
+      
+      
+<h2 id="conclusion">7. Conclusion</h2>
+<p>
+  Cette analyse montre les forces et les faiblesses du projet <strong>ecommerce-frontend</strong>. Des efforts doivent être 
+  concentrés sur la réduction des bugs critiques et l’amélioration de la couverture de tests, actuellement insuffisante.
+</p>
+<ul>
+  <li>✅ Réduire les <strong>bugs (1)</strong> en priorité.</li>
+  <li>🔐 Corriger les <strong>vulnérabilités de sécurité</strong> (1).</li>
+  <li>🧹 Réduire les <strong>code smells</strong> (30) et améliorer la lisibilité du code.</li>
+  <li>🧪 Poursuivre les tests (couverture actuelle : <strong>53.8%</strong>).</li>
+</ul>
+
+<footer>
+        <p>Rapport SonarQube généré automatiquement par le pipeline CI/CD</p>
+        <p>Date de génération: 3/27/2026, 6:42:50 PM</p>
+      </footer>
+    </div>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Graphique d'évolution des métriques
+        const ctx1 = document.getElementById('metricsChart').getContext('2d');
+        new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: ["2026-03-26T14:40:55+0100","2026-03-26T14:50:42+0100","2026-03-26T14:53:55+0100","2026-03-26T15:15:40+0100","2026-03-27T18:34:32+0100"],
+            datasets: [{"label":"bugs","data":["1","25","1","1","1"],"borderColor":"rgb(255, 99, 132)","fill":false},{"label":"code_smells","data":["26","3896","26","26","30"],"borderColor":"rgb(255, 205, 86)","fill":false},{"label":"coverage","data":["0.0","0.0","0.0","50.6","53.8"],"borderColor":"rgb(75, 192, 192)","fill":false},{"label":"vulnerabilities","data":["1","1","1","1","1"],"borderColor":"rgb(255, 159, 64)","fill":false}]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Évolution des métriques'
+              }
+            }
+          }
+        });
+        
+        // Graphique de répartition des problèmes
+        const ctx2 = document.getElementById('issuesChart').getContext('2d');
+        new Chart(ctx2, {
+          type: 'pie',
+          data: {
+            labels: ['Bugs', 'Vulnérabilités', 'Code Smells'],
+            datasets: [{
+              data: [1, 
+                    1, 
+                    30],
+              backgroundColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Répartition des problèmes'
+              }
+            }
+          }
+        });
+        
+        // Graphique de couverture de code
+        const ctx3 = document.getElementById('coverageChart').getContext('2d');
+        const coverageValue = 53.8;
+        new Chart(ctx3, {
+          type: 'doughnut',
+          data: {
+            labels: ['Couvert', 'Non couvert'],
+            datasets: [{
+              data: [coverageValue, 100 - coverageValue],
+              backgroundColor: [
+                'rgb(75, 192, 192)',
+                'rgb(201, 203, 207)'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Couverture de code'
+              }
+            }
+          }
+        });
+      });
+    </script>
+  
+  </body>
+  </html>
+  

@@ -1,51 +1,45 @@
-import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { orders as ordersApi, type Order } from '../api/client';
+import AlertMessage from '../components/AlertMessage';
 import BackLink from '../components/BackLink';
 import LoadingState from '../components/LoadingState';
+import OrderStatusBadge from '../components/OrderStatusBadge';
+import PageContainer from '../components/PageContainer';
+import { useAsyncData } from '../hooks/useAsyncData';
 
 export default function OrderDetail() {
   const { id } = useParams<{ id: string }>();
-  const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    setError('');
-    setOrder(null);
-    if (!id || Number.isNaN(Number(id))) {
-      setLoading(false);
-      setError('Commande introuvable');
-      return;
-    }
-    setLoading(true);
-    ordersApi
-      .getById(Number(id))
-      .then(setOrder)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erreur'))
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { data: order, loading, error } = useAsyncData<Order | null>(
+    null,
+    async () => {
+      if (!id || Number.isNaN(Number(id))) {
+        throw new Error('Commande introuvable');
+      }
+      return ordersApi.getById(Number(id));
+    },
+    [id]
+  );
 
   if (loading && !error) {
     return (
-      <div className="container page">
+      <PageContainer>
         <LoadingState />
-      </div>
+      </PageContainer>
     );
   }
   if (error || !order) {
     return (
-      <div className="container page">
+      <PageContainer>
         <div className="card">
-          <div className="alert alert-error">{error || 'Commande introuvable'}</div>
+          <AlertMessage kind="error" message={error || 'Commande introuvable'} />
           <BackLink to="/orders">← Retour aux commandes</BackLink>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="container page">
+    <PageContainer>
       <BackLink to="/orders">← Mes commandes</BackLink>
       <div className="card">
         <h1 className="page-title">Commande #{order.id}</h1>
@@ -53,9 +47,7 @@ export default function OrderDetail() {
           <p>Date : {new Date(order.createdAt).toLocaleString('fr-FR')}</p>
           <p>
             Statut :{' '}
-            <span className={`badge badge-${order.status === 'CONFIRMED' ? 'success' : order.status === 'CANCELLED' ? 'error' : 'neutral'}`}>
-              {order.status === 'CONFIRMED' ? 'Validée' : order.status === 'CANCELLED' ? 'Annulée' : 'En attente'}
-            </span>
+            <OrderStatusBadge status={order.status} />
           </p>
           <p className="order-total">Total : <strong>{order.totalAmount.toFixed(2)} €</strong></p>
         </div>
@@ -83,6 +75,6 @@ export default function OrderDetail() {
           </table>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

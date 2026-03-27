@@ -1,70 +1,59 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { cart as cartApi, type Cart as CartType } from '../api/client';
+import AlertMessage from '../components/AlertMessage';
 import LoadingState from '../components/LoadingState';
 import EmptyState from '../components/EmptyState';
+import PageContainer from '../components/PageContainer';
+import { useAsyncAction } from '../hooks/useAsyncAction';
+import { useAsyncData } from '../hooks/useAsyncData';
 
 export default function Cart() {
-  const [data, setData] = useState<CartType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  const load = () => {
-    setLoading(true);
-    cartApi
-      .get()
-      .then(setData)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erreur'))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => load(), []);
+  const { data, setData, loading, error: loadError } = useAsyncData<CartType | null>(
+    null,
+    () => cartApi.get(),
+    []
+  );
+  const { error: actionError, run } = useAsyncAction();
 
   const handleUpdate = async (productId: number, quantity: number) => {
-    try {
-      const updated = await cartApi.updateItem(productId, quantity);
-      setData(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
-    }
+    const updated = await run(() => cartApi.updateItem(productId, quantity));
+    if (updated) setData(updated);
   };
 
   const handleRemove = async (productId: number) => {
-    try {
-      const updated = await cartApi.removeItem(productId);
-      setData(updated);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
-    }
+    const updated = await run(() => cartApi.removeItem(productId));
+    if (updated) setData(updated);
   };
+
+  const error = loadError || actionError;
 
   if (loading) {
     return (
-      <div className="container page">
+      <PageContainer>
         <LoadingState />
-      </div>
+      </PageContainer>
     );
   }
   if (error) {
     return (
-      <div className="container page">
-        <div className="alert alert-error">{error}</div>
-      </div>
+      <PageContainer>
+        <AlertMessage kind="error" message={error} />
+      </PageContainer>
     );
   }
   if (!data || data.items.length === 0) {
     return (
-      <div className="container page">
+      <PageContainer>
         <h1 className="page-title">Panier</h1>
         <EmptyState icon="🛒" title="Votre panier est vide.">
           <Link to="/catalog" className="btn btn-primary mt-4">Voir le catalogue</Link>
         </EmptyState>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="container page">
+    <PageContainer>
       <h1 className="page-title">Panier</h1>
       <div className="card table-wrap">
         <table className="table">
@@ -112,6 +101,6 @@ export default function Cart() {
         <p className="cart-total">Total : <strong>{data.totalAmount.toFixed(2)} €</strong></p>
         <Link to="/checkout" className="btn btn-primary">Passer la commande</Link>
       </div>
-    </div>
+    </PageContainer>
   );
 }

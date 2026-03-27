@@ -1,50 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { admin, type Order } from '../../api/client';
+import AlertMessage from '../../components/AlertMessage';
 import LoadingState from '../../components/LoadingState';
 import EmptyState from '../../components/EmptyState';
+import OrderStatusBadge from '../../components/OrderStatusBadge';
+import PageContainer from '../../components/PageContainer';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
+import { useAsyncData } from '../../hooks/useAsyncData';
 
 export default function AdminOrders() {
-  const [list, setList] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
-  const load = () => {
-    setLoading(true);
-    admin.orders
-      .list()
-      .then(setList)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erreur'))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => load(), []);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { data: list, loading, error: loadError } = useAsyncData<Order[]>(
+    [],
+    () => admin.orders.list(),
+    [refreshKey]
+  );
+  const { error: actionError, run, setError: setActionError } = useAsyncAction();
 
   const handleStatusChange = async (orderId: number, status: string) => {
-    setError('');
+    setActionError('');
     setSuccess('');
-    try {
-      await admin.orders.updateStatus(orderId, status);
+    const updated = await run(() => admin.orders.updateStatus(orderId, status));
+    if (updated) {
       setSuccess(status === 'CONFIRMED' ? 'Commande validée.' : 'Commande annulée.');
-      load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setRefreshKey((k) => k + 1);
     }
   };
 
+  const error = loadError || actionError;
+
   if (loading) {
     return (
-      <div className="container page">
+      <PageContainer>
         <LoadingState />
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="container page">
+    <PageContainer>
       <h1 className="page-title">Admin — Commandes</h1>
-      {error && <div className="alert alert-error">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
+      {error && <AlertMessage kind="error" message={error} />}
+      {success && <AlertMessage kind="success" message={success} />}
 
       {list.length === 0 ? (
         <EmptyState icon="📦" title="Aucune commande." />
@@ -69,9 +67,7 @@ export default function AdminOrders() {
                   <td>{new Date(o.createdAt).toLocaleString('fr-FR')}</td>
                   <td>{o.totalAmount.toFixed(2)} €</td>
                   <td>
-                    <span className={`badge badge-${o.status === 'CONFIRMED' ? 'success' : o.status === 'CANCELLED' ? 'error' : 'warning'}`}>
-                      {o.status === 'CONFIRMED' ? 'Validée' : o.status === 'CANCELLED' ? 'Annulée' : 'En attente'}
-                    </span>
+                    <OrderStatusBadge status={o.status} pendingVariant="warning" />
                   </td>
                   <td>
                     {o.status === 'PENDING' && (
@@ -92,8 +88,7 @@ export default function AdminOrders() {
                         </button>
                       </span>
                     )}
-                    {o.status === 'CONFIRMED' && <span className="badge badge-success">Validée</span>}
-                    {o.status === 'CANCELLED' && <span className="badge badge-error">Annulée</span>}
+                    {o.status !== 'PENDING' && <OrderStatusBadge status={o.status} pendingVariant="warning" />}
                   </td>
                 </tr>
               ))}
@@ -101,6 +96,6 @@ export default function AdminOrders() {
           </table>
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 }

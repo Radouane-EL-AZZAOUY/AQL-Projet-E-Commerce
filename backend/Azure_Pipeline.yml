@@ -1,0 +1,284 @@
+name: LiadTech Pipeline SonarQube Deploiement Projet Echooh Advertiser
+
+trigger:
+  branches:
+    include:
+      - Deploiement_Dev
+
+pr:
+  branches:
+    include:
+      - Deploiement_Dev  
+
+pool:
+  vmImage: "ubuntu-22.04"
+
+variables:
+  - group: SonarQube_Secrets_LiadTech_EchoohAdvertiser
+  - group: EchoohSecrets_Advertiser_ENV - Dev
+  - name: sonarQubeServiceConnection
+    value: "LiadTech_Echooh_SonarQube_Connection"
+  - name: JAVA_HOME
+    value: "/usr/lib/jvm/java-17-openjdk"
+  - name: NODE_VERSION
+    value: "19.x"
+  - name: npm_config_cache
+    value: $(Pipeline.Workspace)/.npm
+
+
+stages:
+  - stage: Build 
+    displayName: "🧱 Build en Dev — Compilation & Analyse SonarQube"
+    jobs:
+      - job: BuildAndTest
+        displayName: "Compilation + Tests + Analyse SonarQube"
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "Affichage du contenu du répertoire source :"
+              ls -R $(Build.SourcesDirectory)
+            displayName: "🔍 Déboguer structure du projet"
+
+          - script: |
+              echo "JAVA_HOME=$JAVA_HOME"
+              java -version
+            displayName: "☕ Afficher version Java"
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: "$(NODE_VERSION)"
+            displayName: "📦 Installer Node.js"
+
+          - script: |
+              mkdir -p $(npm_config_cache)
+              echo "Dossier cache npm initialisé : $(npm_config_cache)"
+            displayName: "📁 Créer dossier cache npm"
+
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)"'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(npm_config_cache)
+            displayName: "🧩 Cache npm"
+            continueOnError: true
+
+          - script: |
+              echo "🧹 Suppression variable SONARQUBE_SCANNER_PARAMS"
+              echo "##vso[task.setvariable variable=SONARQUBE_SCANNER_PARAMS;issecret=true]{}"
+            displayName: "Neutraliser paramètres Sonar"
+
+          - task: SonarQubePrepare@7
+            inputs:
+              SonarQube: "$(sonarQubeServiceConnection)"
+              scannerMode: "CLI"
+              configMode: "manual"
+              cliProjectKey: "LidTechEchoohPubAdvertiser"
+              cliProjectName: "LidTechEchoohPubAdvertiser"
+              cliSources: "."
+              extraProperties: |
+                sonar.projectKey=LidTechEchoohPubAdvertiser
+                sonar.projectName=LidTechEchoohPubAdvertiser
+                sonar.sourceEncoding=UTF-8
+                sonar.sources=.
+                sonar.exclusions=**/node_modules/**,**/build/**,**/dist/**,**/*.png,**/*.jpg,**/*.jpeg,**/*.gif,**/*.svg,**/*.woff,**/*.woff2,**/*.eot,**/*.ttf,**/*.otf
+                sonar.qualitygate.wait=false
+            displayName: "🧠 Préparer analyse SonarQube"
+
+          - task: SonarQubeAnalyze@7
+            displayName: "🧩 Analyser avec SonarQube"
+
+          - task: SonarQubePublish@7
+            inputs:
+              pollingTimeoutSec: "300"
+            displayName: "📊 Publier résultats SonarQube"
+
+  - stage: rapport
+    displayName: "📊 Rapport en Dev — Génération du rapport SonarQube"
+    dependsOn: Build
+    jobs:
+      - job: Generation_des_rapports
+        displayName: "🧾 Génération des rapports SonarQube"
+        steps:
+          - task: Bash@3
+            displayName: "📦 Installer dépendances"
+            inputs:
+              targetType: "inline"
+              workingDirectory: "$(Build.SourcesDirectory)/Deployment/scripts"
+              script: |
+                echo "Nettoyage des dépendances"
+                rm -rf node_modules package-lock.json
+                npm install blob
+                npm install
+
+          - task: Bash@3
+            displayName: "🧮 Générer rapport SonarQube"
+            env:
+              SONAR_HOST_URL: $(SONAR_HOST_URL)
+              SONAR_TOKEN: $(SONAR_TOKEN)
+            inputs:
+              targetType: "inline"
+              workingDirectory: "$(Build.SourcesDirectory)/Deployment/scripts"
+              script: |
+                node generate-report.js
+
+          - task: PublishBuildArtifacts@1
+            displayName: "📤 Publier rapports SonarQube"
+            inputs:
+              PathtoPublish: "$(Build.SourcesDirectory)/Deployment/output"
+              ArtifactName: "sonar-reports-Echooh_Advertiser_DEV"
+              publishLocation: "Container"
+
+
+  - stage: GenerateEnvFile
+    displayName: "🌍 Env Dev — Création dynamique des fichiers .env"
+    dependsOn: rapport
+    jobs:
+      - job: GenerateEnv
+        displayName: "📜 Créer et publier les .env pour tous les modules"
+        steps:
+          - checkout: self
+
+          - script: |
+              echo "🔧 Installation de envsubst"
+              sudo apt-get update -y
+              sudo apt-get install -y gettext-base
+
+              echo "📂 Chemin racine du projet : $(System.DefaultWorkingDirectory)"
+
+              echo "🔁 Génération du fichier .env global à partir du template..."
+              envsubst < $(System.DefaultWorkingDirectory)/Deployment/.env.template > $(System.DefaultWorkingDirectory)/.env
+
+              echo "📄 Copie vers le backend (advertiser-api)..."
+              cp $(System.DefaultWorkingDirectory)/.env $(System.DefaultWorkingDirectory)/advertiser-api/.env
+
+              echo "📄 Copie vers le frontend (advertiser-app)..."
+              cp $(System.DefaultWorkingDirectory)/.env $(System.DefaultWorkingDirectory)/advertiser-app/.env
+
+              echo "✅ Vérification des .env générés"
+              ls -la $(System.DefaultWorkingDirectory)/
+              ls -la $(System.DefaultWorkingDirectory)/advertiser-api/
+              ls -la $(System.DefaultWorkingDirectory)/advertiser-app/
+            env:
+              HOST_IP: $(HOST_IP)
+              DOMAIN_NAME: $(DOMAIN_NAME)
+              HOST: $(HOST)
+              DB_USER: $(DB_USER)
+              DB_PASS: $(DB_PASS)
+              DB_PORT: $(DB_PORT)
+              REDIS_PORT: $(REDIS_PORT)
+              JWT_SECRET: $(JWT_SECRET)
+              JWT_REFRESH_SECRET: $(JWT_REFRESH_SECRET)
+              JWT_OTP_SECRET: $(JWT_OTP_SECRET)
+              JWT_WS_TOKEN_SECRET: $(JWT_WS_TOKEN_SECRET)
+              JWT_ACCESS_TTL: $(JWT_ACCESS_TTL)
+              JWT_REFRESH_TTL: $(JWT_REFRESH_TTL)
+              JWT_OTP_EXPIRES_TTL: $(JWT_OTP_EXPIRES_TTL)
+              JWT_EXPIRES_IN: $(JWT_EXPIRES_IN)
+              JWT_ISSUER: $(JWT_ISSUER)
+              JWT_AUDIENCE: $(JWT_AUDIENCE)
+              JWT_ALG: $(JWT_ALG)
+              API_PORT: $(API_PORT)
+              APP_PORT: $(APP_PORT)
+              NODE_ENV: $(NODE_ENV)
+              API_BASE_URL: $(API_BASE_URL)
+              FRONTEND_URL: $(FRONTEND_URL)
+              NEXT_PUBLIC_API_URL: $(NEXT_PUBLIC_API_URL)
+              NEXT_PUBLIC_WS_URL: $(NEXT_PUBLIC_WS_URL)
+              NEXT_UNOPTIMIZED_IMAGES: $(NEXT_UNOPTIMIZED_IMAGES)
+              DEFAULT_LOCALE: $(DEFAULT_LOCALE)
+              LOCALES: $(LOCALES)
+              GA_ID: $(GA_ID)
+              ENABLE_ANALYTICS: $(ENABLE_ANALYTICS)
+              ENABLE_DEBUG: $(ENABLE_DEBUG)
+              MAIL_USER: $(MAIL_USER)
+              MAIL_PASS: $(MAIL_PASS)
+              MAIL_FROM: $(MAIL_FROM)
+              CORS_ORIGIN: $(CORS_ORIGIN)
+              RATE_LIMIT_TTL: $(RATE_LIMIT_TTL)
+              RATE_LIMIT_LIMIT: $(RATE_LIMIT_LIMIT)
+              LOG_LEVEL: $(LOG_LEVEL)
+              LOG_FILE: $(LOG_FILE)
+            displayName: "🌍 Génération dynamique des .env (root, API, APP)"
+
+          # Publication séparée de chaque .env
+          - task: PublishBuildArtifacts@1
+            displayName: "📦 Publier .env racine"
+            inputs:
+              PathtoPublish: "$(System.DefaultWorkingDirectory)/.env"
+              ArtifactName: "env_root"
+              publishLocation: "Container"
+
+          - task: PublishBuildArtifacts@1
+            displayName: "📦 Publier .env backend"
+            inputs:
+              PathtoPublish: "$(System.DefaultWorkingDirectory)/advertiser-api/.env"
+              ArtifactName: "env_api"
+              publishLocation: "Container"
+
+          - task: PublishBuildArtifacts@1
+            displayName: "📦 Publier .env frontend"
+            inputs:
+              PathtoPublish: "$(System.DefaultWorkingDirectory)/advertiser-app/.env"
+              ArtifactName: "env_app"
+              publishLocation: "Container"
+
+  - stage: Deploy
+    displayName: "🚀 Déploiement en Dev — Livraison sur serveur OVH"
+    dependsOn: GenerateEnvFile
+    jobs:
+      - job: DeployApp
+        displayName: "📦 Déploiement Ansible sur VM Echooh"
+        pool:
+          name: Default
+          demands:
+            - Agent.Name -equals LiadTechEchoohProvisoireAgent
+        steps:
+          - task: DownloadBuildArtifacts@1
+            inputs:
+              buildType: "current"
+              downloadType: "specific"
+              artifactName: "env_root"
+              downloadPath: "$(System.DefaultWorkingDirectory)/temp/envs"
+            displayName: "📥 Télécharger .env racine"
+
+          - task: DownloadBuildArtifacts@1
+            inputs:
+              buildType: "current"
+              downloadType: "specific"
+              artifactName: "env_api"
+              downloadPath: "$(System.DefaultWorkingDirectory)/temp/envs"
+            displayName: "📥 Télécharger .env backend"
+
+          - task: DownloadBuildArtifacts@1
+            inputs:
+              buildType: "current"
+              downloadType: "specific"
+              artifactName: "env_app"
+              downloadPath: "$(System.DefaultWorkingDirectory)/temp/envs"
+            displayName: "📥 Télécharger .env frontend"
+
+          - script: |
+              echo "🧩 Déplacement des .env..."
+              mv $(System.DefaultWorkingDirectory)/temp/envs/env_root/.env $(System.DefaultWorkingDirectory)/.env
+              mv $(System.DefaultWorkingDirectory)/temp/envs/env_api/.env $(System.DefaultWorkingDirectory)/advertiser-api/.env
+              mv $(System.DefaultWorkingDirectory)/temp/envs/env_app/.env $(System.DefaultWorkingDirectory)/advertiser-app/.env
+
+              echo "✅ Vérification :"
+              ls -la $(System.DefaultWorkingDirectory)/
+              ls -la $(System.DefaultWorkingDirectory)/advertiser-api/
+              ls -la $(System.DefaultWorkingDirectory)/advertiser-app/
+            displayName: "🧾 Préparer les .env avant Ansible"
+
+          - task: Bash@3
+            displayName: "🚀 Exécution du playbook Ansible"
+            inputs:
+              targetType: "inline"
+              workingDirectory: "$(System.DefaultWorkingDirectory)/Deployment/ansible"
+              script: |
+                echo "🚀 Déploiement via Ansible..."
+                ansible-playbook -i inventory.ini playbook.yml \
+                  -e "source_dir=$(Build.SourcesDirectory)" \
+                  -e "env_file=$(System.DefaultWorkingDirectory)/.env" \
+                  -u relghoufiri -b -vvv

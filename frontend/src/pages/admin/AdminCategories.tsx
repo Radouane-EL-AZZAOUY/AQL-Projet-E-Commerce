@@ -1,42 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { admin, type Category } from '../../api/client';
+import AlertMessage from '../../components/AlertMessage';
 import Modal from '../../components/Modal';
 import LoadingState from '../../components/LoadingState';
 import EmptyState from '../../components/EmptyState';
+import PageContainer from '../../components/PageContainer';
+import { useAsyncAction } from '../../hooks/useAsyncAction';
+import { useAsyncData } from '../../hooks/useAsyncData';
 
 export default function AdminCategories() {
-  const [list, setList] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [editing, setEditing] = useState<Category | null>(null);
   const [editName, setEditName] = useState('');
   const [newName, setNewName] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModal, setIsEditModal] = useState(false);
-
-  const load = () => {
-    setLoading(true);
-    admin.categories
-      .list()
-      .then(setList)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Erreur'))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => load(), []);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { data: list, loading, error: loadError } = useAsyncData<Category[]>(
+    [],
+    () => admin.categories.list(),
+    [refreshKey]
+  );
+  const { error: actionError, run, setError: setActionError } = useAsyncAction();
 
   const handleCreate = async (name: string) => {
     if (!name.trim()) return;
-    setError('');
+    setActionError('');
     setSuccess('');
-    try {
-      await admin.categories.create({ name: name.trim() });
+    const created = await run(() => admin.categories.create({ name: name.trim() }));
+    if (created) {
       setNewName('');
       setSuccess('Catégorie créée.');
-      load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setRefreshKey((k) => k + 1);
     }
   };
 
@@ -49,15 +44,13 @@ export default function AdminCategories() {
 
   const handleUpdate = async () => {
     if (!editing || !editName.trim()) return;
-    setError('');
+    setActionError('');
     setSuccess('');
-    try {
-      await admin.categories.update(editing.id, { name: editName.trim() });
+    const updated = await run(() => admin.categories.update(editing.id, { name: editName.trim() }));
+    if (updated) {
       closeModal();
       setSuccess('Catégorie mise à jour.');
-      load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setRefreshKey((k) => k + 1);
     }
   };
 
@@ -77,21 +70,21 @@ export default function AdminCategories() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Supprimer cette catégorie ?')) return;
-    setError('');
-    try {
-      await admin.categories.delete(id);
+    setActionError('');
+    const deleted = await run(() => admin.categories.delete(id));
+    if (deleted !== undefined) {
       setSuccess('Catégorie supprimée.');
-      load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
+      setRefreshKey((k) => k + 1);
     }
   };
 
+  const error = loadError || actionError;
+
   return (
-    <div className="container page">
+    <PageContainer>
       <h1 className="page-title">Admin — Catégories</h1>
-      {error && <div className="alert alert-error">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
+      {error && <AlertMessage kind="error" message={error} />}
+      {success && <AlertMessage kind="success" message={success} />}
 
       <div className="flex justify-end mb-4">
         <button type="button" className="btn btn-primary" onClick={openCreateModal}>
@@ -176,6 +169,6 @@ export default function AdminCategories() {
           )}
         </div>
       </Modal>
-    </div>
+    </PageContainer>
   );
 }

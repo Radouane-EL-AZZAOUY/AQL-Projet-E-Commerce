@@ -1,56 +1,52 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cart as cartApi, orders } from '../api/client';
+import AlertMessage from '../components/AlertMessage';
 import LoadingState from '../components/LoadingState';
+import PageContainer from '../components/PageContainer';
+import { useAsyncAction } from '../hooks/useAsyncAction';
+import { useAsyncData } from '../hooks/useAsyncData';
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    cartApi
-      .get()
-      .then((c) => {
-        if (!c.items.length) navigate('/cart');
-      })
-      .catch(() => setError('Erreur chargement du panier'))
-      .finally(() => setLoading(false));
-  }, [navigate]);
+  const { loading, error: loadError } = useAsyncData(
+    null,
+    async () => {
+      const c = await cartApi.get();
+      if (!c.items.length) navigate('/cart');
+      return null;
+    },
+    [navigate],
+    () => 'Erreur chargement du panier'
+  );
+  const { loading: submitting, error: submitError, run, setError: setSubmitError } = useAsyncAction();
 
   const handleConfirm = async () => {
-    setError('');
-    setSubmitting(true);
-    try {
+    setSubmitError('');
+    await run(async () => {
       const c = await cartApi.get();
       const order = await orders.create(c.items.map((i) => ({ productId: i.productId, quantity: i.quantity })));
       await orders.confirm(order.id);
       await cartApi.clear();
       navigate(`/orders/${order.id}`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur');
-    } finally {
-      setSubmitting(false);
-    }
+    });
   };
 
   if (loading) {
     return (
-      <div className="container page">
+      <PageContainer>
         <LoadingState />
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="container page">
+    <PageContainer>
       <h1 className="page-title">Valider la commande</h1>
       <div className="bg-white rounded-xl shadow-lg border border-slate-200 max-w-[480px] p-8">
         <p className="page-subtitle mb-6">
           Votre panier sera converti en commande définitive. Une fois validée, la commande ne pourra plus être modifiée.
         </p>
-        {error && <div className="alert alert-error">{error}</div>}
+        {(loadError || submitError) && <AlertMessage kind="error" message={loadError || submitError} />}
         <div className="flex gap-4 flex-wrap">
           <button type="button" className="btn btn-secondary" onClick={() => navigate('/cart')}>
             Retour au panier
@@ -66,6 +62,6 @@ export default function Checkout() {
           </button>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

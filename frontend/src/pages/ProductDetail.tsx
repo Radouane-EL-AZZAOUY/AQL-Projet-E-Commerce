@@ -5,6 +5,7 @@ import { products, cart } from '../api/client';
 import BackLink from '../components/BackLink';
 import LoadingState from '../components/LoadingState';
 import EmptyState from '../components/EmptyState';
+import ProductImage from '../components/ProductImage';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -65,16 +66,12 @@ export default function ProductDetail() {
         <div className="grid lg:grid-cols-2 gap-0">
           {/* Product image */}
           <div className="bg-slate-100 flex items-center justify-center min-h-[280px] lg:min-h-[400px] aspect-square lg:aspect-auto overflow-hidden">
-            {product.imageUrl ? (
-              <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
-            ) : (
-              <div className="text-center p-8">
-                <svg className="w-24 h-24 mx-auto text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-sm text-slate-500 font-medium">Image produit</p>
-              </div>
-            )}
+            <ProductImage
+              src={product.imageUrl}
+              alt={product.name}
+              iconClassName="w-24 h-24 mx-auto text-slate-400"
+              placeholderLabel="Image produit"
+            />
           </div>
 
           {/* Product info */}
