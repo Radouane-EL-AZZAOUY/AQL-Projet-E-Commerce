@@ -25,6 +25,12 @@ public class CartPage extends BasePage {
         return this;
     }
 
+    /** Call after {@link #open()} when an item was just added (server may respond asynchronously). */
+    public CartPage waitUntilHasItems() {
+        wait.untilElementsNonEmpty(cartRows);
+        return this;
+    }
+
     public boolean hasItems() {
         return !driver.findElements(cartRows).isEmpty();
     }

@@ -14,7 +14,7 @@ public class CheckoutPage extends BasePage {
     }
 
     public CheckoutPage waitUntilLoaded() {
-        waitForUrlContains("/checkout");
+        waitForUrlOrHashContains("/checkout");
         findVisible(pageTitle);
         waitForText(pageTitle, "Valider la commande");
         return this;

@@ -7,6 +7,8 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class WebDriverFactory {
 
@@ -21,6 +23,17 @@ public final class WebDriverFactory {
         options.addArguments("--disable-gpu");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
+        // Native Chrome modals (not in DOM) block Selenium: "Save password?", "Change your password"
+        // (breach / Password Check), etc. Disable password services + leak check for E2E.
+        options.addArguments(
+                "--disable-features=PasswordCheck,PasswordLeakDetection,PasswordManagerOnboarding"
+        );
+        Map<String, Object> prefs = new HashMap<>();
+        prefs.put("credentials_enable_service", false);
+        prefs.put("credentials_enable_autosignin", false);
+        prefs.put("profile.password_manager_enabled", false);
+        prefs.put("profile.password_manager_leak_detection", false);
+        options.setExperimentalOption("prefs", prefs);
 
         if (headless) {
             options.addArguments("--headless=new");

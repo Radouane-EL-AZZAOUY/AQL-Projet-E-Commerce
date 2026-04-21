@@ -1,6 +1,0 @@
-projectKey=com.ecommerce:ecommerce-backend
-serverUrl=http://localhost:9000
-serverVersion=26.3.0.120487
-dashboardUrl=http://localhost:9000/dashboard?id=com.ecommerce%3Aecommerce-backend
-ceTaskId=2e87761c-6035-4ffd-9477-b47ba1bdd96b
-ceTaskUrl=http://localhost:9000/api/ce/task?id=2e87761c-6035-4ffd-9477-b47ba1bdd96b

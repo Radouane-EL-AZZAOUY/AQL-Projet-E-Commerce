@@ -47,6 +47,11 @@ public abstract class BasePage {
         wait.urlContains(value);
     }
 
+    /** Use for React {@code HashRouter} routes where the path lives in {@code #/...}. */
+    protected void waitForUrlOrHashContains(String value) {
+        wait.urlOrHashContains(value);
+    }
+
     protected void waitForText(By locator, String value) {
         wait.waitForText(locator, value);
     }

@@ -14,7 +14,7 @@ public class OrderDetailPage extends BasePage {
     }
 
     public OrderDetailPage waitUntilLoaded() {
-        waitForUrlContains("/orders/");
+        waitForUrlOrHashContains("/orders/");
         findVisible(orderTitle);
         waitForText(orderTitle, "Commande #");
         return this;

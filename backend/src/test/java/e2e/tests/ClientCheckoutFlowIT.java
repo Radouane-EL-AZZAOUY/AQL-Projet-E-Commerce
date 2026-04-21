@@ -35,7 +35,8 @@ class ClientCheckoutFlowIT extends BaseTest {
 
         CartPage cartPage = new CartPage(driver, config)
                 .open()
-                .waitUntilLoaded();
+                .waitUntilLoaded()
+                .waitUntilHasItems();
         assertThat(cartPage.hasItems()).isTrue();
 
         CheckoutPage checkoutPage = cartPage.proceedToCheckout();

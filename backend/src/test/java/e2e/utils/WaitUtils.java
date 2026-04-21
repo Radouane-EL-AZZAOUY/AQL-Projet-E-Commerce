@@ -2,6 +2,7 @@ package e2e.utils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -71,8 +72,33 @@ public class WaitUtils {
         return withRetry(wait -> wait.until(ExpectedConditions.urlContains(value)));
     }
 
+    /**
+     * HashRouter SPAs put routes in {@code window.location.hash} (e.g. {@code #/products/1}).
+     * Some WebDriver implementations expose {@link WebDriver#getCurrentUrl()} without the fragment,
+     * so {@link ExpectedConditions#urlContains(String)} never matches. This waits on both full URL
+     * and {@code location.hash}.
+     */
+    public boolean urlOrHashContains(String substring) {
+        return withRetry(wait -> wait.until(driver -> {
+            String url = driver.getCurrentUrl();
+            if (url != null && url.contains(substring)) {
+                return true;
+            }
+            Object hashObj = ((JavascriptExecutor) driver).executeScript("return window.location.hash || '';");
+            String hash = hashObj == null ? "" : hashObj.toString();
+            return hash.contains(substring);
+        }));
+    }
+
     public boolean textPresent(By locator, String value) {
         return waitForText(locator, value);
+    }
+
+    /**
+     * Waits until at least one element matches (e.g. cart table rows after async add).
+     */
+    public void untilElementsNonEmpty(By locator) {
+        withRetry(w -> w.until(d -> !d.findElements(locator).isEmpty()));
     }
 
     private <T> T withRetry(Function<WebDriverWait, T> action) {

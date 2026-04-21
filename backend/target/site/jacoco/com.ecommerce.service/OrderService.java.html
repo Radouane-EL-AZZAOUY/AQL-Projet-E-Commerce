@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+<span class="fc" id="L18">@RequiredArgsConstructor</span>
 public class OrderService {
 
     private final OrderRepository orderRepository;
@@ -51,7 +51,7 @@ public class OrderService {
 <span class="fc" id="L51">                    .unitPrice(product.getPrice())</span>
 <span class="fc" id="L52">                    .build();</span>
 <span class="fc" id="L53">            order.getItems().add(orderItem);</span>
-        }
+<span class="fc" id="L54">        }</span>
 <span class="fc" id="L55">        order = orderRepository.save(order);</span>
 <span class="fc" id="L56">        return toDto(order);</span>
     }
@@ -74,7 +74,7 @@ public class OrderService {
             }
 <span class="fc" id="L75">            p.setStock(p.getStock() - oi.getQuantity());</span>
 <span class="fc" id="L76">            productRepository.save(p);</span>
-        }
+<span class="fc" id="L77">        }</span>
 <span class="fc" id="L78">        order.setStatus(OrderStatus.CONFIRMED);</span>
 <span class="fc" id="L79">        order = orderRepository.save(order);</span>
 <span class="fc" id="L80">        return toDto(order);</span>
@@ -122,7 +122,7 @@ public class OrderService {
                 }
 <span class="nc" id="L123">                p.setStock(p.getStock() - oi.getQuantity());</span>
 <span class="nc" id="L124">                productRepository.save(p);</span>
-            }
+<span class="nc" id="L125">            }</span>
         }
 <span class="fc" id="L127">        order.setStatus(status);</span>
 <span class="fc" id="L128">        order = orderRepository.save(order);</span>
