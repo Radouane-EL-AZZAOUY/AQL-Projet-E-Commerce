@@ -1,0 +1,25 @@
+-------------------------------------------------------------------------------
+Test set: e2e.tests.ClientCheckoutFlowIT
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 38.03 s <<< FAILURE! -- in e2e.tests.ClientCheckoutFlowIT
+e2e.tests.ClientCheckoutFlowIT.clientCanBrowseAddToCartAndPlaceOrder -- Time elapsed: 37.77 s <<< ERROR!
+org.openqa.selenium.TimeoutException: 
+Expected condition failed: waiting for visibility of element located by By.cssSelector: .alert.alert-success, .alert.alert-error (tried for 10 second(s) with 500 milliseconds interval)
+Build info: version: '4.31.0', revision: '1ef9f18787*'
+System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '17.0.18'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 147.0.7727.102, chrome: {chromedriverVersion: 147.0.7727.57 (b4f28b5637d0..., userDataDir: C:\Users\Radouane\AppData\L...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:51619}, goog:processID: 37860, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(), se:cdp: ws://localhost:51619/devtoo..., se:cdpVersion: 147.0.7727.102, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: 71a44daccef71be6097384fa6cdc2d71
+	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
+	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:228)
+	at e2e.utils.WaitUtils.lambda$0(WaitUtils.java:38)
+	at e2e.utils.WaitUtils.withRetry(WaitUtils.java:86)
+	at e2e.utils.WaitUtils.waitForElement(WaitUtils.java:38)
+	at e2e.pages.BasePage.findVisible(BasePage.java:29)
+	at e2e.pages.ProductDetailPage.addToCart(ProductDetailPage.java:38)
+	at e2e.pages.ProductDetailPage.addToCart(ProductDetailPage.java:47)
+	at e2e.tests.ClientCheckoutFlowIT.clientCanBrowseAddToCartAndPlaceOrder(ClientCheckoutFlowIT.java:34)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

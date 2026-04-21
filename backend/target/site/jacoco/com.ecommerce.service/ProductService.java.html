@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-<span class="fc" id="L20">@RequiredArgsConstructor</span>
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -35,8 +35,8 @@ public class ProductService {
 <span class="fc" id="L35">        Pageable pageable = PageRequest.of(page, size, Sort.by(&quot;name&quot;));</span>
 <span class="fc" id="L36">        Page&lt;Product&gt; productPage = productRepository.searchByDeletedFalseAndOptionalFilters(</span>
 <span class="fc bfc" id="L37" title="All 4 branches covered.">                search != null &amp;&amp; !search.isBlank() ? search.trim() : null,</span>
-                categoryId,
-                pageable);
+<span class="fc" id="L38">                categoryId,</span>
+<span class="fc" id="L39">                pageable);</span>
 <span class="fc" id="L40">        return toPageResponse(productPage);</span>
     }
 
